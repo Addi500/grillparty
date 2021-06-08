@@ -1,0 +1,10 @@
+h1.display-3 {
+    color:white;
+}
+p.display-3 {
+    color:white;
+    font-size: 2em;
+}
+.jumbotron {
+  min-height:600px;
+}

@@ -1,0 +1,41 @@
+{% extends "main.html" %}
+
+{% block content%}
+
+
+<div class = "container">
+<h1>Registrieren </h1>
+
+
+<!-- Platz für das eigentliche Formular... -->
+<form method="POST">
+    {{ form.hidden_tag() }}
+    
+    {{ form.User.label(class="form-label") }}  
+    {{ form.User(class="form-control") }}
+    
+
+    <br>
+    {{ form.mailaddress.label(class="form-label") }}  
+    {{ form.mailaddress(class="form-control") }}
+    <br>
+
+    {{ form.password.label(class="form-label") }}  
+    {{ form.password(class="form-control") }}
+    
+    <br>
+    {{ form.confirm.label(class="form-label") }}  
+    {{ form.confirm(class="form-control") }}
+    
+    <br>
+    {{ form.submit() }}
+    
+    <br><br>
+    {% for field, errors in form.errors.items() %}
+    <small class="form-text text-muted ">
+        {{ ', '.join(errors) }}
+    </small>
+    {% endfor %}
+</form>
+</div>
+{% endblock %}

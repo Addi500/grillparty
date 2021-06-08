@@ -1,0 +1,28 @@
+{% extends "main.html" %}
+
+{% block content%}
+
+
+<!-- Platz für das eigentliche Formular... -->
+<div class = "container">
+<h1>Anmelden </h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+      
+    {{ form.mailaddress.label(class="form-label") }}  
+    {{ form.mailaddress(class="form-control") }}
+    <br>
+    {{ form.password.label(class="form-label") }}  
+    {{ form.password(class="form-control") }}
+    {% for field, errors in form.errors.items() %}
+    <small class="form-text text-muted ">
+        {{ ', '.join(errors) }}
+    </small>
+    {% endfor %}
+
+    <br>
+    {{ form.submit() }}
+</form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "dashboard.html" %}
+
+{% block overview%}
+
+
+<div class = "container-1">
+<h1>Veranstaltung erstellen </h1>
+
+
+<!-- Platz für das eigentliche Formular... -->
+<form method="POST">
+    {{ form.hidden_tag() }}
+    
+    {{ form.title.label(class="form-label") }}  
+    {{ form.title(class="form-control") }}
+    
+
+    <br>
+    {{ form.date.label(class="form-label") }}  
+    {{ form.date(class="form-control") }}
+    <br>
+
+    {{ form.time.label(class="form-label") }}  
+    {{ form.time(class="form-control") }}
+    <br>
+
+    {{ form.itemlist.label(class="form-label") }}  
+    {{ form.itemlist(class="form-control") }}
+    
+    <br>
+    {{ form.address.label(class="form-label") }}  
+    {{ form.address(class="form-control") }}
+    
+    <br>
+    {{ form.Teilnehmer.label(class="form-label") }}  
+    {{ form.Teilnehmer(class="form-control") }}
+
+    
+    <br>
+    {{ form.submit() }}
+    <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+    
+    {% for field, errors in form.errors.items() %}
+    <small class="form-text text-muted ">
+        {{ ', '.join(errors) }}
+    </small>
+    {% endfor %}
+</form>
+</div>
+{% endblock %}

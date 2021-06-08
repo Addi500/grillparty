@@ -1,0 +1,36 @@
+.sidenav {
+    height:auto;
+    width: 200px;
+    left: 0;
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    padding-bottom: 0;
+    z-index: 1; /* Stay on top */
+}
+
+.sidenav a {
+    
+    text-decoration: none;
+    font-size: 20px;
+    padding: 6px 8px 6px 16px;
+    color: #818181;
+    display: block;
+  }
+
+  .sidenav a:hover {
+    color: #f1f1f1;
+  }
+
+  .main {
+    margin-left: 200px; /* Same as the width of the sidebar */
+    
+  }
+
+  .container-1 {
+    margin-left: 200px;
+  }
+  
+  /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+  @media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+  }
