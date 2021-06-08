@@ -67,6 +67,14 @@ def insert_into_users(conn, cur, mailaddress, name, password):
 def insert_into_parties(conn, cur, title, date, time, address, description):
 
 	#generate id!!!!
+	#hochzählen oder zufallszahl/hash?
+	"""
+	hochzählen:
+	max of(select all existing ids in db)
+	+1
+	=id
+	
+	"""
 
 	id = 0
 
@@ -100,6 +108,19 @@ def check_login(conn, cur, mailaddress, password):
 		return True
 	else:
 		return False
+
+def check_duplicate(conn, cur, table, column, value):
+	#https://stackoverflow.com/questions/61896450/check-duplication-when-edit-an-exist-database-field-with-wtforms-custom-validato
+
+	cur.execute("SELECT * FROM ? WHERE ? = ?", (table, column, value))
+	for row in cur:
+		if len(cur.fetchone()) == 0:
+			continue
+		else:
+			return True
+	return False
+	#wenn leer, nichts vorhanden
+	#wenn wert in tupel: duplikat
 
 
 #if __name__ == "__main__":
