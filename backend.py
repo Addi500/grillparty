@@ -1,6 +1,15 @@
 import sqlite3 as sql
 import os
 
+
+"""
+TODO:
+
+- SQL ERROR HANDLING
+"""
+
+
+
 std_path = "database.db"
 
 def write_to_db(cursor, connection, sql_script, parameters=[]):
