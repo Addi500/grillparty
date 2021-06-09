@@ -92,6 +92,7 @@ def insert_into_parties(conn, cur, title, date, time, address, description):
 	"""
 	parameters = [id, title, date, time, address, description]
 	write_to_db(cur, conn, script, parameters)
+	return id
 
 def insert_into_participants(conn, cur, party_id, participant_mail):
 	script = """
