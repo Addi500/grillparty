@@ -43,6 +43,7 @@ class NewEvent(FlaskForm):
     submit = SubmitField("Erstellen")
     
 # Test 1-2-3-4
+# und nochmal 
 
 #app.route gehören zur View?
 @app.route('/')
