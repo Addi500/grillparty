@@ -98,6 +98,9 @@ def newevent():
        
         
         print("if ")
+        id = insert_into_parties(conn, cur, session["title"], session["date"], session["time"], session["address"])
+        insert_into_itemlist(conn, cur, id, session["itemlist"])
+        insert_into_participants(conn, cur, id, session["Teilnehmer"])
         return render_template("registrate_success.html")
     return render_template("newevent.html", form=form)
 
