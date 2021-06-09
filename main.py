@@ -1,22 +1,15 @@
 
 from datetime import date
-import datetime
 from sqlite3.dbapi2 import Time
-from time import time
-from flask import Flask, render_template, json
+from flask import Flask, render_template
 from flask.globals import session
 from flask_wtf import FlaskForm
-from wtforms.fields.core import DateField, Field, FieldList, FormField, StringField, DateField
+from wtforms.fields import StringField, PasswordField, SubmitField, TextAreaField
+from wtforms.fields.html5 import DateField
 from wtforms.validators import Email, InputRequired, data_required, email, equal_to, length
-from wtforms.fields.simple import PasswordField, SubmitField, TextAreaField
-from wtforms.fields.html5 import DateField, DateTimeField
-from wtforms.widgets.html5 import DateTimeLocalInput
-from wtforms_components.fields.html5 import DateTimeLocalField
-from wtforms_components.fields.split_date_time import Date
 from backend import *
 from wtforms_components import TimeField
 
-#wtforms.widgets.html5.TimeInput
 
 app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = 'secretKeyForCookieGeneration'
@@ -41,27 +34,14 @@ class Login(FlaskForm):
     submit = SubmitField("Anmelden")
 #Abgleich mit Datenbank, Fehlermeldungen (Userdaten nicht vorhanden) einbauen
 
-class ZutatenEntryForm(FlaskForm):
-    name = StringField()
-
+#Klasse zum Anlegen einer neuen Veranstaltung
 class NewEvent(FlaskForm):
     title = StringField(label="Titel ")
     date = DateField(label="Datum", default = date.today())
     time = TimeField(label="Uhrzeit")
     address = TextAreaField(label="Ort")
-    item = StringField(label="Artikelliste tbd")
     Teilnehmer = TextAreaField (label="Teilnehmer tbd")
-    
     submit = SubmitField("Erstellen")
-
-
-
-class AddressesForm(FlaskForm):
-    """A form for one or more addresses"""
-    
-    
-    
-    #json.dumps(time, default=str)
 
  
 @app.route('/')
@@ -71,7 +51,6 @@ def index():
 @app.route("/registrate", methods=["GET","POST"])
 def registrate():
     form = Registrate()
-    #json.dumps(NewEvent.time, default=str)
     if form.validate_on_submit():
         session._get_current_object.__name__
         session["User"] = form.User.data
@@ -103,6 +82,8 @@ def login():
     return render_template("login.html", form=form)
 
 @app.route("/newevent", methods= ["GET", "POST"])
+#https://tutorial101.blogspot.com/2020/11/python-flask-add-remove-input-fields.html
+#genutzte Vorlage für Zutatenliste - SQL Speicherung auch vorhanden 
 def newevent():
     form = NewEvent()
     
@@ -112,7 +93,6 @@ def newevent():
         session["title"] = form.title.data
         session["date"] = form.date.data
         session["time"] = str(form.time.data)
-        session["itemlist"] = form.item.data
         session["address"] = form.address.data
         session["Teilnehmer"] = form.Teilnehmer.data
        

@@ -1,40 +1,41 @@
 {% extends "dashboard.html" %}
 
 {% block overview%}
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
 <div class = "container-1">
 <h1>Veranstaltung erstellen </h1>
 
-
-<!-- Platz für das eigentliche Formular... -->
 <form method="POST">
     {{ form.hidden_tag() }}
     
     {{ form.title.label(class="form-label") }}  
     {{ form.title(class="form-control") }}
-    
-
     <br>
     {{ form.date.label(class="form-label") }}  
     {{ form.date(class="form-control") }}
-
     <br>
-
     {{ form.time.label(class="form-label") }}  
-    {{ form.time(class="form-control") }}
-    <br>
-    {{ form.item.label(class="form-label") }}  
-    {{ form.item(class="form-control") }}
-    
+    {{ form.time(class="form-control") }}     
     <br>
     {{ form.address.label(class="form-label") }}  
     {{ form.address(class="form-control") }}
-    
     <br>
     {{ form.Teilnehmer.label(class="form-label") }}  
     {{ form.Teilnehmer(class="form-control") }}
+    <br>
 
+    <h3>Was dürfen Ihre Gäste mitbringen?</h3>
+    <form method="POST">
+        <div class="input-wrapper">
+            <div><br/>
+            <input type="text" name="field[]" value=""/>
+            <a href="javascript:void(0);" class="add-input" title="Add input"> <img src="/static/plus.png"/></a>
+            </div>
+        </div>
+    <input type="submit" name="cmdsubmit">
+
+    </form>
     
     <br>
     {{ form.submit() }}
@@ -45,6 +46,30 @@
         {{ ', '.join(errors) }}
     </small>
     {% endfor %}
-</form>
 </div>
+</form>
+
+<!-- Jquery Skript für dynamisches Hinzufügen und Entfernen vol Elementen aus der Zutatenliste-->
+<script>
+
+    $(document).ready(function(){
+        var max_input_fields = 30;
+        var add_input = $('.add-input');
+        var input_wrapper = $('.input-wrapper');
+        var new_input = '<div><input type="text" name="field[]" value=""/><a href="javascript:void(0);" class="remove-input" title="Remove input"><img src="/static/minus.png"/></a></div>';
+        var add_input_count = 1; 
+        $(add_input).click(function(){
+            if(add_input_count < max_input_fields){
+                add_input_count++; 
+                $(input_wrapper).append(new_input); 
+            }
+        });
+        $(input_wrapper).on('click', '.remove-input', function(e){
+            e.preventDefault();
+            $(this).parent('div').remove();
+            add_input_count--;
+        });
+    });
+    </script>
+
 {% endblock %}
