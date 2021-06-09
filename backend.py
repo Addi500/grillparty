@@ -85,7 +85,8 @@ def insert_into_parties(conn, cur, title, date, time, address, description):
 	
 	"""
 
-	id = 0
+	cur.execute("SELECT MAX(id) FROM parties")
+	id = cur.fetchone()[0] + 1
 
 	script = """
 	INSERT INTO parties (?,?,?,?,?,?)

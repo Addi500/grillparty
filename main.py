@@ -119,8 +119,10 @@ def newevent():
         
         print("if ")
         id = insert_into_parties(conn, cur, session["title"], session["date"], session["time"], session["address"])
-        insert_into_itemlist(conn, cur, id, session["itemlist"])
-        insert_into_participants(conn, cur, id, session["Teilnehmer"])
+        for item in session["itemlist"]:
+            insert_into_itemlist(conn, cur, id, item) #change to list above
+        for participant in session["Teilnehmer"]:
+            insert_into_participants(conn, cur, id, participant) #change to list above
         return render_template("registrate_success.html")
     return render_template("newevent.html", form=form)
 
