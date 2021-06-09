@@ -42,7 +42,7 @@ class NewEvent(FlaskForm):
     Teilnehmer = TextAreaField (label="Teilnehmer tbd")
     submit = SubmitField("Erstellen")
     
-
+# Test 1-2-3-4
 
 #app.route gehören zur View?
 @app.route('/')
