@@ -1,8 +1,13 @@
 {% extends "main.html" %}
 
 {% block content%}
-
-<div class = "container">
+<title> Grillparty - Anmelden</title>
+<div class = "container-par">
+    <div class = "container-6">
+        <h1>Grillparty</h1>
+        <p>Eine einfache Möglichkeit um Grillpartys zu verwalten.</p>
+    </div>
+<div class = "container-5">
 <h1>Anmelden </h1>
 <form method="POST">
     {{ form.hidden_tag() }}
@@ -22,5 +27,7 @@
     {{ form.submit() }}
 </form>
 </div>
-
+</div>
+<br><br><br><br><br><br>
+<br><br>
 {% endblock %}

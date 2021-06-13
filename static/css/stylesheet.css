@@ -1,8 +1,5 @@
 /* Navbar */
 
-
-
-
 /* Jumbotron */
 h1.display-3 {
     color:white;
@@ -12,6 +9,7 @@ p.display-3 {
     font-size: 2em;
 }
 .jumbotron {
+  margin-top: auto;
   min-height:600px;
 }
 
@@ -37,8 +35,24 @@ p.display-3 {
   font-size: 20px;
 }
 
-.Kontakt {
-  border: 1px;
-  
+/* Anmelden / Registrieren*/
+.container-par {
+  display:flex;
+  align-items: center;
+}
+
+
+.container-5 {
+  width: 50%;
+  border: 2px solid black;
+  border-radius: 5px;
+  margin-right: 2%;
+  margin-top: 2%;
+  padding: 50px;
+}
+
+.container-6 {
+    width:50%;
+    text-align: center;
 }
 
