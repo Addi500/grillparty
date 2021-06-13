@@ -15,3 +15,30 @@ p.display-3 {
   min-height:600px;
 }
 
+/* Hilfe Seite */
+.FAQs {
+  display: inline-block;
+  margin: 20px;
+}
+
+.FAQs h2{
+  text-align: center;
+  text-decoration: underline;
+
+}
+
+.text h3 {
+
+  font-size:25px;
+  font-weight: bold;
+
+ }
+.text p {
+  font-size: 20px;
+}
+
+.Kontakt {
+  border: 1px;
+  
+}
+
