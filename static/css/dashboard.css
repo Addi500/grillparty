@@ -28,6 +28,22 @@
   .container-1 {
     margin-left: 200px;
   }
+
+  .Search {
+      display:flex;
+      align-items: center;
+    }
+  
+  .Search form {
+    width:20%
+  }
+  .Search button {
+    width:5%
+  }
+  .Search h1 {
+    width: 60%
+  }
+  
   
   
   

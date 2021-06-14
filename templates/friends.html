@@ -1,0 +1,23 @@
+{% extends "dashboard.html" %}
+
+{% block overview%}
+<div class = "container-1">
+<title> Grillparty - Freunde</title>
+<div class="Search">
+<h1 > Freunde</h1>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    
+      
+    {{ form.user(class="form-control") }}
+
+    
+</form>
+<button type="submit">Search</button>
+</div>
+
+</div>
+
+</div>
+{% endblock %}

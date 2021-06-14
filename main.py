@@ -5,7 +5,7 @@ from flask import Flask, render_template
 from flask.globals import session
 from flask_wtf import FlaskForm
 from wtforms.fields import StringField, PasswordField, SubmitField, TextAreaField
-from wtforms.fields.html5 import DateField
+from wtforms.fields.html5 import DateField, SearchField
 from wtforms.validators import Email, InputRequired, data_required, email, equal_to, length
 from backend import *
 from wtforms_components import TimeField
@@ -40,9 +40,12 @@ class NewEvent(FlaskForm):
     date = DateField(label="Datum", default = date.today())
     time = TimeField(label="Uhrzeit")
     address = TextAreaField(label="Ort")
-    Teilnehmer = TextAreaField (label="Teilnehmer tbd")
+    Teilnehmer = SearchField (label="Teilnehmer tbd")
     submit = SubmitField("Erstellen")
 
+class Friends(FlaskForm):
+    user = SearchField()
+    submit = SubmitField("Suchen")
  
 @app.route('/')
 def index():
@@ -114,6 +117,15 @@ def newevent():
 def dashbard():
     return render_template("dashboard.html")
 
+@app.route('/friends', methods= ["GET", "POST"])
+def friends():
+    form = Friends()
+    if form.validate_on_submit():
+
+        session._get_current_object.__name__
+        session["user"] = form.user.data
+
+    return render_template('friends.html',form=form)
 
 if __name__ == '__main__':
     app.run()
