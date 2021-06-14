@@ -1,8 +1,5 @@
 /* Navbar */
 
-
-
-
 /* Jumbotron */
 h1.display-3 {
     color:white;
@@ -12,6 +9,50 @@ p.display-3 {
     font-size: 2em;
 }
 .jumbotron {
+  margin-top: auto;
   min-height:600px;
+}
+
+/* Hilfe Seite */
+.FAQs {
+  display: inline-block;
+  margin: 20px;
+}
+
+.FAQs h2{
+  text-align: center;
+  text-decoration: underline;
+
+}
+
+.text h3 {
+
+  font-size:25px;
+  font-weight: bold;
+
+ }
+.text p {
+  font-size: 20px;
+}
+
+/* Anmelden / Registrieren*/
+.container-par {
+  display:flex;
+  align-items: center;
+}
+
+
+.container-5 {
+  width: 50%;
+  border: 2px solid black;
+  border-radius: 5px;
+  margin-right: 2%;
+  margin-top: 2%;
+  padding: 50px;
+}
+
+.container-6 {
+    width:50%;
+    text-align: center;
 }
 

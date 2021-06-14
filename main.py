@@ -48,6 +48,10 @@ class NewEvent(FlaskForm):
 def index():
     return render_template('start.html')
 
+@app.route('/help')
+def help():
+    return render_template('help.html')
+
 @app.route("/registrate", methods=["GET","POST"])
 def registrate():
     form = Registrate()
@@ -113,4 +117,4 @@ def dashbard():
 
 if __name__ == '__main__':
     app.run()
-    #app.run(debug=True)
+    app.run(debug=True)

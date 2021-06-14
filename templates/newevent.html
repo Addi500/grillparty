@@ -2,6 +2,7 @@
 
 {% block overview%}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<title> Grillparty - Veranstaltung</title>
 
 <div class = "container-1">
 <h1>Veranstaltung erstellen </h1>
@@ -38,7 +39,7 @@
     </form>
     
     <br>
-    {{ form.submit() }}
+    
     <a href="/dashboard" class="btn btn-secondary">Cancel</a>
     
     {% for field, errors in form.errors.items() %}
