@@ -122,18 +122,29 @@ def dashbard():
 @app.route('/friends', methods= ["GET", "POST"])
 def friends():
     form = Friends()
+    print("aber hier")
     if form.validate_on_submit():
-
+        print("hier bin ich")
         session._get_current_object.__name__
         session["user"] = form.user.data
 
-    return render_template('friends.html',form=form)
+        suchergebnisse = search(conn, cur, "users", session["user"])
+        print (suchergebnisse)
+
+    return render_template('friends.html', form=form)
 #übergibt gesuchten User. Funktion für Buttons fehlt noch
 
 
 @app.route('/invitations')
 def invitations():
+    #user = current_user
+
+
+    #check_for_friend_requests(conn, cur, user)
     return render_template('invitations.html')
+
+    
+    
 #keine Klasse bisher angelegt, benötigt Übergabe der Einladungen aus der
 #Datenbank, Buttons noch ohne Funktion, Einladungsart (Freunde / Veranstaltung)
 # Einladung von: User, bei Veranstaltung komplette Ausgabe der Einladnung, neue form

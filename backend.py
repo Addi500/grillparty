@@ -12,7 +12,7 @@ TODO:
 
 std_path = "database.db"
 
-def write_to_db(cursor, connection, sql_script, parameters=[]):
+def write_to_db(connection, cursor, sql_script, parameters=[]):
 	cursor.execute(sql_script, parameters)
 	connection.commit()
 
@@ -29,7 +29,7 @@ def initial_db(name=std_path):
 				password TEXT NOT NULL,
 				PRIMARY KEY (mailaddress));
 				"""
-		write_to_db(cur, conn, initialization_script)
+		write_to_db(conn, cur, initialization_script)
 
 		initialization_script = """
 				CREATE TABLE parties (
@@ -38,27 +38,31 @@ def initial_db(name=std_path):
 				date TEXT NOT NULL,
 				time TEXT NOT NULL,
 				address TEXT NOT NULL,
-				description TEXT NOT NULL,
-				PRIMARY KEY (id));
+				owner TEXT NOT NULL
+				PRIMARY KEY (id),
+				FOREIGN KEY (owner) REFERNCES users(mailaddress));
 				"""
-		write_to_db(cur, conn, initialization_script)
+		write_to_db(conn, cur, initialization_script)
 
 		initialization_script = """
 				CREATE TABLE participants (
 				party_id INT NOT NULL,
 				participant_mail TEXT NOT NULL,
+				accepted INT NOT NULL,
 				FOREIGN KEY (party_id) REFERENCES parties(id),
 				FOREIGN KEY (participant_mail) REFERENCES users(mailaddress));
 				"""
-		write_to_db(cur, conn, initialization_script)
+		write_to_db(conn, cur, initialization_script)
 
 		initialization_script = """
 				CREATE TABLE itemlist (
 				party_id INT NOT NULL,
 				item TEXT NOT NULL,
-				PRIMARY KEY (party_id,item));
+				brought_by TEXT,
+				PRIMARY KEY (party_id,item)
+				FOREIGN KEY (brought_by) REFERENCES users(mailaddress));
 		"""
-		write_to_db(cur, conn, initialization_script)
+		write_to_db(conn, cur, initialization_script)
 
 		initialization_script = """
 				CREATE TABLE friends (
@@ -67,7 +71,7 @@ def initial_db(name=std_path):
 				FOREIGN KEY (friend1_mail) REFERENCES users(mailaddress),
 				FOREIGN KEY (friend2_mail) REFERENCES users(mailaddress));
 		"""
-		write_to_db(cur, conn, initialization_script)
+		write_to_db(conn, cur, initialization_script)
 		#bonus: encrypt passwords. http://blog.dornea.nu/2011/07/28/howto-keep-your-passwords-safe-using-sqlite-and-sqlcipher/
 
 def establish_connection(sql_filepath=std_path):
@@ -77,12 +81,12 @@ def establish_connection(sql_filepath=std_path):
 
 def insert_into_users(conn, cur, mailaddress, name, password):
 	script = """
-	INSERT INTO users VALUES(?,?,?)
+	INSERT INTO users VALUES(?,?,?);
 	"""
 	parameters = [mailaddress, name, password]
-	write_to_db(cur, conn, script, parameters)
+	write_to_db(conn, cur, script, parameters)
 
-def insert_into_parties(conn, cur, title, date, time, address, description):
+def insert_into_parties(conn, cur, title, date, time, address, description=None):
 
 	#generate id!!!!
 	#hochzählen oder zufallszahl/hash?
@@ -98,35 +102,35 @@ def insert_into_parties(conn, cur, title, date, time, address, description):
 	id = cur.fetchone()[0] + 1
 
 	script = """
-	INSERT INTO parties (?,?,?,?,?,?)
+	INSERT INTO parties VALUES (?,?,?,?,?);
 	"""
-	parameters = [id, title, date, time, address, description]
-	write_to_db(cur, conn, script, parameters)
+	parameters = [id, title, date, time, address]
+	write_to_db(conn, cur, script, parameters)
 	return id
 
 def insert_into_participants(conn, cur, party_id, participant_mail):
 	script = """
-	INSERT INTO participants (?,?)
+	INSERT INTO participants VALUES (?,?,?);
 	"""
-	parameters = [party_id, participant_mail]
-	write_to_db(cur, conn, script, parameters)
+	parameters = [party_id, participant_mail, 0]
+	write_to_db(conn, cur, script, parameters)
 
 def insert_into_itemlist(conn, cur, party_id, item):
 
 	#wie werden die Items übergeben? hier schon for-schleife oder beim aufruf jeweils?
 
 	script = """
-	INSERT INTO itemlist (?,?)
+	INSERT INTO itemlist VALUES (?,?);
 	"""
 	parameters = [party_id, item]
-	write_to_db(cur, conn, script, parameters)
+	write_to_db(conn, cur, script, parameters)
 
 def insert_into_friends(conn, cur, friend1, friend2):
 	script = """
-	INSERT INTO friends(?,?)
+	INSERT INTO friends VALUES (?,?);
 	"""
 	parameters = [friend1, friend2]
-	write_to_db(cur, conn, script, parameters)
+	write_to_db(conn, cur, script, parameters)
 
 def new_friend_request(conn, cur, requesting_user, requested_user, operation):
 	"""
@@ -161,17 +165,22 @@ def check_for_friend_requests(conn, cur, user):
 	WH
 	SELECT friend1
 	FROM friends
-	WHERE friend2 = ?
+	WHERE friend2 = ?;
 	"""
 
-def search(conn, cur, table, column, begriff):
+def search(conn, cur, table, begriff):
+	
 	script = """
 	SELECT *
 	FROM ?
-	WHERE ? LIKE ?;
+	WHERE name = ?;
 	"""
 
-	parameters = [table, column, begriff]
+	parameters = [table, begriff]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+
+	return results
 
 	###db abfrage
 	###returns
@@ -187,13 +196,59 @@ def check_login(conn, cur, mailaddress, password):
 def check_duplicate(conn, cur, table, column, value):
 	#https://stackoverflow.com/questions/61896450/check-duplication-when-edit-an-exist-database-field-with-wtforms-custom-validato
 
-	cur.execute("SELECT * FROM ? WHERE ? = ?", (table, column, value))
+	cur.execute("SELECT * FROM ? WHERE ? = ?;", (table, column, value))
 	for row in cur:
 		if len(cur.fetchone()) == 0:
 			continue
 		else:
 			return True
 	return False
+
+def select_parties_of_user(conn, cur, user):
+	#only returns own parties right now
+	
+	script = """
+	SELECT title, date, address
+	FROM parties
+	WHERE owner = ?;
+	"""
+	parameters=[user]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+
+	return results
+
+def select_open_party_invites(conn, cur, user):
+	#returns list of titles, date and address of open invites to parties
+	
+	script = """
+	SELECT title, date, address
+	FROM parties
+	WHERE parties.id
+	IN (SELECT party_id FROM participants WHERE participant_mail = ? AND accepted = 0);
+	"""
+
+	parameters = [user]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+	return results
+
+def select_itemlist(conn, cur, party):
+	#returns list of all items of party with name who brings it
+
+	script = """
+	SELECT item, brought_by
+	FROM itemlist
+	WHERE party_id = ?;
+	"""
+	parameters = [party]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+	return results
+
+###strukturänderungen db (neue spalte bei participants, ob zugesagt)
+
+
 	#wenn leer, nichts vorhanden
 	#wenn wert in tupel: duplikat
 
