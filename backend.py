@@ -86,7 +86,7 @@ def insert_into_users(conn, cur, mailaddress, name, password):
 	parameters = [mailaddress, name, password]
 	write_to_db(conn, cur, script, parameters)
 
-def insert_into_parties(conn, cur, title, date, time, address, description=None):
+def insert_into_parties(conn, cur, title, date, time, address, owner):
 
 	#generate id!!!!
 	#hochzählen oder zufallszahl/hash?
@@ -102,9 +102,9 @@ def insert_into_parties(conn, cur, title, date, time, address, description=None)
 	id = cur.fetchone()[0] + 1
 
 	script = """
-	INSERT INTO parties VALUES (?,?,?,?,?);
+	INSERT INTO parties VALUES (?,?,?,?,?,?);
 	"""
-	parameters = [id, title, date, time, address]
+	parameters = [id, title, date, time, address, owner]
 	write_to_db(conn, cur, script, parameters)
 	return id
 
@@ -120,9 +120,9 @@ def insert_into_itemlist(conn, cur, party_id, item):
 	#wie werden die Items übergeben? hier schon for-schleife oder beim aufruf jeweils?
 
 	script = """
-	INSERT INTO itemlist VALUES (?,?);
+	INSERT INTO itemlist VALUES (?,?,?);
 	"""
-	parameters = [party_id, item]
+	parameters = [party_id, item, None]
 	write_to_db(conn, cur, script, parameters)
 
 def insert_into_friends(conn, cur, friend1, friend2):
