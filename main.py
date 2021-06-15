@@ -126,6 +126,17 @@ def friends():
         session["user"] = form.user.data
 
     return render_template('friends.html',form=form)
+#übergibt gesuchten User. Funktion für Buttons fehlt noch
+
+
+@app.route('/invitations')
+def invitations():
+    return render_template('invitations.html')
+#keine Klasse bisher angelegt, benötigt Übergabe der Einladungen aus der
+#Datenbank, Buttons noch ohne Funktion, Einladungsart (Freunde / Veranstaltung)
+# Einladung von: User, bei Veranstaltung komplette Ausgabe der Einladnung, neue form
+# für Auswahl der Mitbringsel
+
 
 if __name__ == '__main__':
     app.run()
