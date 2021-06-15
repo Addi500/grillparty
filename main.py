@@ -123,7 +123,7 @@ def dashbard():
 def friends():
     form = Friends()
     if form.validate_on_submit():
-
+        print("Hierbinich")
         session._get_current_object.__name__
         session["user"] = form.user.data
 

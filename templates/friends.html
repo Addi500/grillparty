@@ -6,23 +6,21 @@
 <div class="Search">
 <h1 > Freunde</h1>
 
-<form method="POST">
+<form method="POST" class = "form">
     {{ form.hidden_tag() }}
-    
-      
     {{ form.user(class="form-control") }}
-
+    <button class = "test" type="submit">Search</button>
     
 </form>
-<button type="submit">Search</button>
-</div>
 
+</div>
 </div>
 
 <div class = "Friend">
     <h3>Username</h3>
     <button>Hinzufügen</button>
-    <button>Löschen</button>
+    
 </div>
 </div>
+
 {% endblock %}
