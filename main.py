@@ -1,7 +1,7 @@
 
 from datetime import date
 from sqlite3.dbapi2 import Time
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask.globals import session
 from flask_wtf import FlaskForm
 from wtforms.fields import StringField, PasswordField, SubmitField, TextAreaField
@@ -42,6 +42,7 @@ class NewEvent(FlaskForm):
     address = TextAreaField(label="Ort")
     Teilnehmer = SearchField (label="Teilnehmer tbd")
     submit = SubmitField("Erstellen")
+
 
 class Friends(FlaskForm):
     user = SearchField()
@@ -102,7 +103,8 @@ def newevent():
         session["time"] = str(form.time.data)
         session["address"] = form.address.data
         session["Teilnehmer"] = form.Teilnehmer.data
-       
+        session["itemlist"] = request.form.getlist('field[]')
+        print("itemliste: ", session["itemlist"])
         
         print("if ")
         id = insert_into_parties(conn, cur, session["title"], session["date"], session["time"], session["address"])
