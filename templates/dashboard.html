@@ -1,7 +1,7 @@
 {% extends "main.html" %}
 
 {% block navbar %}
-<title> Grillparty - Dashboard</title>
+
 
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
@@ -17,11 +17,12 @@
 <!-- Side navigation -->
 <div class="sidenav">
     <a href="/newevent">Veranstaltung erstellen</a>
-    <a href="#">Einladungen</a>
+    <a href="/invitations">Einladungen</a>
     <a href="/friends">Freunde</a>
   </div>
   
   {% block overview %}
+  <title> Grillparty - Dashboard</title>
   <!-- Page content -->
   <div class="main">
     <p> Übersicht der Veranstaltungen... 
