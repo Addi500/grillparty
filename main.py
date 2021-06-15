@@ -122,9 +122,8 @@ def dashbard():
 @app.route('/friends', methods= ["GET", "POST"])
 def friends():
     form = Friends()
-    print("aber hier")
     if form.validate_on_submit():
-        print("hier bin ich")
+
         session._get_current_object.__name__
         session["user"] = form.user.data
 
