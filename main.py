@@ -6,7 +6,9 @@ from sqlite3.dbapi2 import Time
 from flask import Flask, render_template, request
 from flask.globals import session
 from flask_wtf import FlaskForm
+from wtforms import widgets
 from wtforms.fields import StringField, PasswordField, SubmitField, TextAreaField
+from wtforms.fields.core import RadioField, SelectMultipleField
 from wtforms.fields.html5 import DateField, SearchField
 from wtforms.validators import Email, InputRequired, data_required, email, equal_to, length
 from backend import *
@@ -53,6 +55,15 @@ class NewEvent(FlaskForm):
 class Friends(FlaskForm):
     user = SearchField()
     submit = SubmitField("Suchen")
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+    
+class itemlist(FlaskForm):
+    #itemlist = aus DB ziehen
+    #check = MultiCheckboxField('label', choices=itemlist)
+    submit = SubmitField("Absenden")
  
 
 @app.route('/')
@@ -135,7 +146,28 @@ def newevent():
 
 @app.route("/dashboard")
 def dashbard():
+    session._get_current_object.__name__
+    
+    
     return render_template("dashboard.html")
+
+@app.route("/bearbeiten", methods=['POST'])
+def Bearbeiten():
+    form = itemlist()
+    
+    if request.method == 'POST':
+        session._get_current_object.__name__
+        if request.form['Acceptinvitation'] == '0':
+            print("1")
+        elif request.form['Acceptinvitation'] == '2':
+            print("2")
+
+    forward_message = "Moving Forward..."
+
+    return render_template('bearbeiten.html', forward_message=forward_message);    
+
+
+
 
 @app.route('/friends', methods= ["GET", "POST"])
 def friends():
@@ -208,7 +240,7 @@ def Accept():
     
     forward_message = "Moving Forward..."
 
-    return render_template('invitations.html', forward_message=forward_message);    
+    return render_template('dashboard.html', forward_message=forward_message);    
     
 #keine Klasse bisher angelegt, benötigt Übergabe der Einladungen aus der
 #Datenbank, Buttons noch ohne Funktion, Einladungsart (Freunde / Veranstaltung)

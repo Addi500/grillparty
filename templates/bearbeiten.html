@@ -1,0 +1,26 @@
+{% extends "dashboard.html" %}
+{% block overview%}
+
+<p>{{ parties[1] }}</p>
+<p>{{ parties[2] }}</p>
+<p>{{ parties[3] }}</p>
+<p>{{ parties[4] }}</p>
+<p>{{ parties[5] }}</p>
+
+{% for item in itemlist %}
+<form>
+        <a href="#">
+            <h2>{{ itemlist[1] }}</h2>
+            <input type="hidden" name="info" value="{{ parties[0] }}"/>
+            <form action="/bearbeiten" method="post">
+                <button name="Bearbeiten" type="submit" value="{{ parties[0] }}" >Bearbeiten</button>
+            </form>
+            
+        </a>
+        <span class="badge badge-primary">{{ party[3] }}</span>
+        <hr>
+        {{ form.submit() }}
+    </form>
+{% endfor %}
+
+{% endblock %}
