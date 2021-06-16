@@ -33,13 +33,12 @@ def initial_db(name=std_path):
 
 		initialization_script = """
 				CREATE TABLE parties (
-				id INT NOT NULL AUTOINCREMENT,
+				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 				title TEXT NOT NULL,
 				date TEXT NOT NULL,
 				time TEXT NOT NULL,
 				address TEXT NOT NULL,
 				owner TEXT NOT NULL,
-				PRIMARY KEY (id),
 				FOREIGN KEY (owner) REFERENCES users(mailaddress));
 				"""
 		write_to_db(conn, cur, initialization_script)
@@ -59,7 +58,7 @@ def initial_db(name=std_path):
 				party_id INT NOT NULL,
 				item TEXT NOT NULL,
 				brought_by TEXT,
-				PRIMARY KEY (party_id,item)
+				FOREIGN KEY (party_id) REFERENCES parties(id),
 				FOREIGN KEY (brought_by) REFERENCES users(mailaddress));
 		"""
 		write_to_db(conn, cur, initialization_script)
