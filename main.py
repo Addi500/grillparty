@@ -63,6 +63,7 @@ class MultiCheckboxField(SelectMultipleField):
 class itemlist(FlaskForm):
     #itemlist = aus DB ziehen
     #check = MultiCheckboxField('label', choices=itemlist)
+    #https://gist.github.com/doobeh/4667330
     submit = SubmitField("Absenden")
  
 
