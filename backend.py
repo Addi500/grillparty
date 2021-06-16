@@ -222,7 +222,7 @@ def select_open_party_invites(conn, cur, user):
 	#returns list of titles, date and address of open invites to parties
 	
 	script = """
-	SELECT title, date, address, owner
+	SELECT id, title, date, address, owner
 	FROM parties
 	WHERE parties.id
 	IN (SELECT party_id FROM participants WHERE participant_mail = ? AND accepted = 0);

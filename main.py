@@ -55,10 +55,6 @@ class Friends(FlaskForm):
     submit = SubmitField("Suchen")
  
 
-
-
-
-
 @app.route('/')
 def index():
     return render_template('start.html')
