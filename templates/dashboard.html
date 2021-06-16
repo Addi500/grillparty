@@ -2,6 +2,7 @@
 
 {% block navbar %}
 
+{% if session['logged_in'] %}
 
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
@@ -87,5 +88,7 @@
     </p>
   </div>
 </body>
+
 {% endblock %}
+{% endif %}
 {% endblock %}

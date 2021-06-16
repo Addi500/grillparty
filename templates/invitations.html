@@ -6,9 +6,21 @@
 
 <div class = "Einladungen">
     <p> Sie haben eine Einladung von: , Art: (Freundschaft/Veranstaltung</p>
-    <button>Annehmen</button>
-    <button>Ablehnen</button>
-    <button> Ansehen </button>
+  
+
+    {% for invite in invites %}
+        <a href="#">
+            <h2>{{ invite[3] }}</h2>
+            <form action="/accept/" method="post">
+                <button name="Accept" type="submit" value= '(invite[0])'>Annehmen</button>
+            </form>
+            <button>Ablehnen</button>
+            
+        </a>
+        <span class="badge badge-primary">{{ invite[3] }}</span>
+        <hr>
+    {% endfor %}
+
 </div>
 
 {% endblock %}

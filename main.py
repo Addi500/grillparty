@@ -21,37 +21,8 @@ db_name = "dbrun1.db"
 initial_db(db_name)
 conn, cur = establish_connection(db_name)
 
-login_manager = LoginManager(app)
-login_manager.login_view = "login"
-class User(UserMixin):
-    def __init__(self, id, email, password):
-         self.id = id
-         self.email = email
-         self.password = password
-         self.authenticated = False
-    def is_active(self):
-         return self.is_active()
-    def is_anonymous(self):
-         return False
-    def is_authenticated(self):
-         return self.authenticated
-    def is_active(self):
-         return True
-    def get_id(self):
-         return self.id
+current_user = ""
 
-#rausziehen des Users aus DB - muss angepasst werden
-#https://medium.com/analytics-vidhya/how-to-use-flask-login-with-sqlite3-9891b3248324        
-@login_manager.user_loader
-def load_user(user_id):
-   conn = sqlite3.connect('/var/www/flask/login.db')
-   curs = conn.cursor()
-   curs.execute("SELECT * from login where id = (?)",[user_id])
-   lu = curs.fetchone()
-   if lu is None:
-      return None
-   else:
-      return User(int(lu[0]), lu[1], lu[2])
 
 #Klasse für Registrierung
 class Registrate(FlaskForm):
@@ -114,14 +85,20 @@ def registrate():
 @app.route("/login", methods=["GET","POST"])
 def login():
     form = Login()
+    
+            
     if form.validate_on_submit():
         session._get_current_object.__name__
+        
         session["address"] = form.mailaddress.data
         session["password"] = form.password.data
+        
         print("if ")
         if check_login(conn, cur, session["address"], session["password"]):
             print("correct pw")
-            #login_user(user)
+            
+            session['logged_in']=True
+            #current_user = session["address"] 
             return render_template("dashboard.html")
         else:
             print("wrong pw")
@@ -179,15 +156,29 @@ def friends():
 #übergibt gesuchten User. Funktion für Buttons fehlt noch
 
 
+
+
 @app.route('/invitations')
 def invitations():
-    #user = current_user
+    user = session["address"]
+    #user = "test@132.com"
     invites = select_open_party_invites(conn, cur, user)
-
-    #check_for_friend_requests(conn, cur, user)
-    return render_template('invitations.html')
-
+    print(invites)
     
+    #check_for_friend_requests(conn, cur, user)
+    return render_template('invitations.html', invites = invites)
+
+@app.route("/accept/", methods=['POST'])
+def Accept():
+    if request.method == 'POST':
+        if request.form['Accept'] == 'testp3':
+            print("1")
+        elif request.form['Accept'] == 'testparty1':
+            print("2")
+    #Moving forward code
+    forward_message = "Moving Forward..."
+
+    return render_template('invitations.html', forward_message=forward_message);    
     
 #keine Klasse bisher angelegt, benötigt Übergabe der Einladungen aus der
 #Datenbank, Buttons noch ohne Funktion, Einladungsart (Freunde / Veranstaltung)
