@@ -1,5 +1,7 @@
 
 from datetime import date
+from re import UNICODE
+import sqlite3
 from sqlite3.dbapi2 import Time
 from flask import Flask, render_template, request
 from flask.globals import session
@@ -9,6 +11,7 @@ from wtforms.fields.html5 import DateField, SearchField
 from wtforms.validators import Email, InputRequired, data_required, email, equal_to, length
 from backend import *
 from wtforms_components import TimeField
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 
 app = Flask(__name__, template_folder='templates')
@@ -17,6 +20,38 @@ app.config['SECRET_KEY'] = 'secretKeyForCookieGeneration'
 db_name = "dbrun1.db"
 initial_db(db_name)
 conn, cur = establish_connection(db_name)
+
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+class User(UserMixin):
+    def __init__(self, id, email, password):
+         self.id = id
+         self.email = email
+         self.password = password
+         self.authenticated = False
+    def is_active(self):
+         return self.is_active()
+    def is_anonymous(self):
+         return False
+    def is_authenticated(self):
+         return self.authenticated
+    def is_active(self):
+         return True
+    def get_id(self):
+         return self.id
+
+#rausziehen des Users aus DB - muss angepasst werden
+#https://medium.com/analytics-vidhya/how-to-use-flask-login-with-sqlite3-9891b3248324        
+@login_manager.user_loader
+def load_user(user_id):
+   conn = sqlite3.connect('/var/www/flask/login.db')
+   curs = conn.cursor()
+   curs.execute("SELECT * from login where id = (?)",[user_id])
+   lu = curs.fetchone()
+   if lu is None:
+      return None
+   else:
+      return User(int(lu[0]), lu[1], lu[2])
 
 #Klasse für Registrierung
 class Registrate(FlaskForm):
@@ -48,6 +83,11 @@ class Friends(FlaskForm):
     user = SearchField()
     submit = SubmitField("Suchen")
  
+
+
+
+
+
 @app.route('/')
 def index():
     return render_template('start.html')
@@ -81,6 +121,7 @@ def login():
         print("if ")
         if check_login(conn, cur, session["address"], session["password"]):
             print("correct pw")
+            #login_user(user)
             return render_template("dashboard.html")
         else:
             print("wrong pw")
