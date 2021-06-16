@@ -26,65 +26,20 @@
   <title> Grillparty - Dashboard</title>
   <!-- Page content -->
   <div class="main">
-    <p> Übersicht der Veranstaltungen... 
-        <br><br><br>
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>HEllogfdsgfsdgnfds
-        fdsgfopsdgfsd <br>
+    {% for party in parties %}
+        <a href="#">
+            <h2>{{ parties[1] }}</h2>
+            <p><td>{{ parties[0] }}</td></p>
+            <input type="hidden" name="info" value="{{ parties[0] }}"/>
+            <form action="/bearbeiten" method="post">
+                <button name="Bearbeiten" type="submit" value="{{ parties[0] }}" >Bearbeiten</button>
+            </form>
+            
+        </a>
+        <span class="badge badge-primary">{{ parties[1] }}</span>
+        <hr>
+{% endfor %}
+
     </p>
   </div>
 </body>
