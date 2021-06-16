@@ -38,9 +38,9 @@ def initial_db(name=std_path):
 				date TEXT NOT NULL,
 				time TEXT NOT NULL,
 				address TEXT NOT NULL,
-				owner TEXT NOT NULL
+				owner TEXT NOT NULL,
 				PRIMARY KEY (id),
-				FOREIGN KEY (owner) REFERNCES users(mailaddress));
+				FOREIGN KEY (owner) REFERENCES users(mailaddress));
 				"""
 		write_to_db(conn, cur, initialization_script)
 

@@ -17,7 +17,7 @@ from flask_login import LoginManager, UserMixin, login_required, login_user, log
 app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = 'secretKeyForCookieGeneration'
 
-db_name = "dbrun1.db"
+db_name = "dbrun2.db"
 initial_db(db_name)
 conn, cur = establish_connection(db_name)
 
@@ -163,6 +163,8 @@ def AcceptFriends():
             print("1")
         elif request.form['Acceptinvitation'] == '2':
             print("2")
+        
+            #insert_into_friends()
 
     forward_message = "Moving Forward..."
 
@@ -197,11 +199,27 @@ def invitations():
 def Accept():
     session._get_current_object.__name__
     
+    script_accept = """
+    UPDATE participants
+    SET accepted = 1
+    WHERE party_id = ? AND participant_mail = ?;
+    """
+
+    script_decline = """
+    DELETE FROM participants
+    WHERE party_id = ? AND participant_mail = ?;
+    """
+
     if request.method == 'POST':
-        if request.form['Accept'] == '0':
-            print("1")
-        elif request.form['Accept'] == '2':
-            print("2")
+        if "Accept" in request.form:
+            print("accepted1")
+            cur.execute(script_accept, [request.form['Accept'], session["address"]])
+            conn.commit()
+    #WENN DECLINE
+        if "Decline" in request.form:
+            print("Declined2")
+            cur.execute(script_decline, [request.form['Decline'], session["address"]])
+            conn.commit()
 
     # Abgleich mit db nicht über if sondern anhand Buttonvalue akzeptieren (von 0 auf 1 setzen)
     #Moving forward code

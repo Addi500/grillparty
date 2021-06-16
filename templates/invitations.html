@@ -9,16 +9,18 @@
   
 
     {% for invite in invites %}
-        <a href="#">
-            <h2>{{ invite[2] }}</h2>
-            <p><td>{{ invite[0] }}</td></p>
-            <input type="hidden" name="info" value="{{ invite[0] }}"/>
-            <form action="/accept/" method="post">
-                <button name="Accept" type="submit" value="{{ invite[0] }}" >Annehmen</button>
-            </form>
-            <button>Ablehnen</button>
-            
-        </a>
+    <a href="#">
+        <h2>{{ invite[2] }}</h2>
+        <p><td>{{ invite[0] }}</td></p>
+        <input type="hidden" name="info" value="{{ invite[0] }}" />
+        <form action="/accept/" method="post">
+            <button name="Accept" type="submit" value="{{ invite[0] }}">Annehmen</button>
+        </form>
+        <form action="/decline/" method="post">
+            <button name="Decline" type="submit" value="{{ invite[0] }}">Ablehnen</button>
+        </form>
+
+    </a>
         <span class="badge badge-primary">{{ invite[3] }}</span>
         <hr>
     {% endfor %}
