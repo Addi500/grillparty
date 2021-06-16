@@ -136,6 +136,10 @@ def login():
 def newevent():
     form = NewEvent()
     
+    ###tbd: USER NAME ÜBERGEBEN!!!!
+    user = "test2@123.com"
+
+
     if form.validate_on_submit():
 
         session._get_current_object.__name__
@@ -148,7 +152,7 @@ def newevent():
         print("itemliste: ", session["itemlist"])
         
         print("if ")
-        id = insert_into_parties(conn, cur, session["title"], session["date"], session["time"], session["address"])
+        id = insert_into_parties(conn, cur, session["title"], session["date"], session["time"], session["address"],user)
         for item in session["itemlist"]:
             insert_into_itemlist(conn, cur, id, item) #change to list above
         for participant in session["Teilnehmer"]:
@@ -164,17 +168,27 @@ def dashbard():
 def friends():
     form = Friends()
     if form.validate_on_submit():
-        print("Hierbinich")
+
         session._get_current_object.__name__
         session["user"] = form.user.data
 
-    return render_template('friends.html',form=form)
+        suchergebnisse = search(conn, cur, "users", session["user"])
+        print (suchergebnisse)
+
+    return render_template('friends.html', form=form)
 #übergibt gesuchten User. Funktion für Buttons fehlt noch
 
 
 @app.route('/invitations')
 def invitations():
+    #user = current_user
+    invites = select_open_party_invites(conn, cur, user)
+
+    #check_for_friend_requests(conn, cur, user)
     return render_template('invitations.html')
+
+    
+    
 #keine Klasse bisher angelegt, benötigt Übergabe der Einladungen aus der
 #Datenbank, Buttons noch ohne Funktion, Einladungsart (Freunde / Veranstaltung)
 # Einladung von: User, bei Veranstaltung komplette Ausgabe der Einladnung, neue form
