@@ -33,7 +33,7 @@ def initial_db(name=std_path):
 
 		initialization_script = """
 				CREATE TABLE parties (
-				id INT NOT NULL,
+				id INT NOT NULL AUTOINCREMENT,
 				title TEXT NOT NULL,
 				date TEXT NOT NULL,
 				time TEXT NOT NULL,
@@ -89,22 +89,14 @@ def insert_into_users(conn, cur, mailaddress, name, password):
 def insert_into_parties(conn, cur, title, date, time, address, owner):
 
 	#generate id!!!!
-	#hochzählen oder zufallszahl/hash?
-	"""
-	hochzählen:
-	max of(select all existing ids in db)
-	+1
-	=id
 	
-	"""
-
-	cur.execute("SELECT MAX(id) FROM parties")
-	id = cur.fetchone()[0] + 1
+	#cur.execute("SELECT MAX(id) FROM parties")
+	#id = cur.fetchone()[0] + 1
 
 	script = """
-	INSERT INTO parties VALUES (?,?,?,?,?,?);
+	INSERT INTO parties (title, date, time, address, owner) VALUES (?,?,?,?,?);
 	"""
-	parameters = [id, title, date, time, address, owner]
+	parameters = [title, date, time, address, owner]
 	write_to_db(conn, cur, script, parameters)
 	return id
 
@@ -132,7 +124,7 @@ def insert_into_friends(conn, cur, friend1, friend2):
 	parameters = [friend1, friend2]
 	write_to_db(conn, cur, script, parameters)
 
-def new_friend_request(conn, cur, requesting_user, requested_user, operation):
+def friend_request(conn, cur, requesting_user, requested_user, operation):
 	"""
 	Arg: operation
 	"request" : someone asks for a new friendship
@@ -154,19 +146,74 @@ def new_friend_request(conn, cur, requesting_user, requested_user, operation):
 
 		cur.execute(script, parameters)
 		conn.commit()
+	else:
+		print("wrong operation")
 
-def check_for_friend_requests(conn, cur, user):
+def check_for_friend_requests(conn, cur, user, operation):
 	"""
 	checks, if there are new friend requests
-	"""
+	returned tupel:
+	0: friend mail (id)
+	1: friend name
 
-	script = """
-	CASE (S
-	WH
-	SELECT friend1
-	FROM friends
-	WHERE friend2 = ?;
 	"""
+	if operation == my_requests:
+		script = """
+		SELECT users.name, friend2_mail
+		FROM friends
+		INNER JOIN users on users.mailaddress = friends.friend2_mail
+		WHERE friend2_mail NOT IN
+			(SELECT friend1_mail
+			FROM friends
+			WHERE friend2_mail = ?)
+		AND friend1_mail = ?;
+		"""
+		parameters = [user, user]
+		cur.execute(script, parameters)
+		results = fetchall()
+		return results
+
+	elif operation == foreign_requests:
+		script = """
+		SELECT users.name, friend1_mail
+		FROM friends
+		INNER JOIN users on users.mailaddress = friends.friend1_mail
+		WHERE friend1_mail IN
+			(SELECT friend1_mail
+			FROM friends
+			WHERE friend2_mail = ?)
+		AND NOT friend1_mail IN
+			(SELECT friend2_mail
+			FROM friends
+			WHERE friend1_mail = ?);
+		"""
+		parameters = [user, user]
+		cur.execute(script, parameters)
+		results = fetchall()
+		return results
+	else:
+		print("wrong operation")
+
+def select_friends(conn, cur, user):
+	"""
+	Tupel:
+	0: friend mail (id)
+	1: friend name
+	"""
+	script = """
+	SELECT users.name, friend2_mail
+	FROM friends
+	INNER JOIN users on users.mailaddress = friends.friend2_mail
+	WHERE friend2_mail IN 
+		(SELECT friend1_mail
+		FROM friends
+		WHERE friend2_mail = ?)
+	AND friend1_mail = ?;
+	"""
+	parameters = [user, user]
+	cur.execute(script, parameters)
+	friends = cur.fetchall()
+	return friends
 
 def search(conn, cur, table, begriff):
 	

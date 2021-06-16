@@ -177,14 +177,17 @@ def friends():
     user = session["address"]
     if form.validate_on_submit():
 
-        session._get_current_object.__name__
-        
-        session["user"] = form.user.data
+        session._get_current_object.__name__        
+        session["user_search"] = form.user.data
 
-        suchergebnisse = search(conn, cur, "users", session["user"])
+        suchergebnisse = search(conn, cur, "users", session["user_search"])
         print (suchergebnisse)
 
-    return render_template('friends.html', form=form, friends=friends)
+        
+        friends = select_friends(conn, cur, user)
+        friend_requests_to_me = check_for_friend_requests(conn, cur, user, "foreign_requests")
+
+    return render_template('friends.html', form=form, friend_requests_to_me=friend_requests_to_me)
     
 #übergibt gesuchten User. Funktion für Buttons fehlt noch
 @app.route("/acceptinv/", methods=['POST'])
@@ -192,7 +195,7 @@ def AcceptFriends():
     session._get_current_object.__name__
     
     if request.method == 'POST':
-        if request.form['Acceptinvitation'] == '0':
+        if 'Acceptinvitation' in request.form:
             print("1")
         elif request.form['Acceptinvitation'] == '2':
             print("2")

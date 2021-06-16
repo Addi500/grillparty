@@ -19,22 +19,22 @@
 </div>
 
 </form>
-<div class ="FriendRequest">
-{% for friend in friends %}
-        <a href="#">
-            <h2>{{ friend[2] }}</h2>
-            <p><td>{{ friend[0] }}</td></p>
-            <input type="hidden" name="info" value="{{ friend[0] }}"/>
-            <form action="/acceptinv/" method="post">
-                <button name="Acceptinvitation" type="submit" value="{{ friend[0] }}" >Annehmen</button>
-            </form>
-            <form action="/declineinv/" method="post">
-                <button name="Declineinvitation" type="submit" value="{{ friend[0] }}" >Ablehnen</button>
-            </form>
-        </a>
-        <span class="badge badge-primary">{{ friend[3] }}</span>
-        <hr>
-{% endfor %}
+<div class="FriendRequest">
+    {% for friend in friend_requests_to_me %}
+    <a href="#">
+        <h2>{{ friend[1] }}</h2>
+        <p><td>{{ friend[1] }}</td></p>
+        <input type="hidden" name="info" value="{{ friend[0] }}" />
+        <form action="/acceptinv/" method="post">
+            <button name="Acceptinvitation" type="submit" value="{{ friend[0] }}">Annehmen</button>
+        </form>
+        <form action="/declineinv/" method="post">
+            <button name="Declineinvitation" type="submit" value="{{ friend[0] }}">Ablehnen</button>
+        </form>
+    </a>
+    <span class="badge badge-primary">{{ friend[1] }}</span>
+    <hr>
+    {% endfor %}
 </div>
 
 </div>
