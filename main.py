@@ -84,10 +84,6 @@ class Friends(FlaskForm):
     submit = SubmitField("Suchen")
  
 
-
-
-
-
 @app.route('/')
 def index():
     return render_template('start.html')
@@ -182,10 +178,11 @@ def friends():
 @app.route('/invitations')
 def invitations():
     #user = current_user
+    user = "test@132.com"
     invites = select_open_party_invites(conn, cur, user)
-
+    print(invites)
     #check_for_friend_requests(conn, cur, user)
-    return render_template('invitations.html')
+    return render_template('invitations.html', invites = invites)
 
     
     
