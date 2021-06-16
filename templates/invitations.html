@@ -10,9 +10,11 @@
 
     {% for invite in invites %}
         <a href="#">
-            <h2>{{ invite[3] }}</h2>
+            <h2>{{ invite[2] }}</h2>
+            <p><td>{{ invite[0] }}</td></p>
+            <input type="hidden" name="info" value="{{ invite[0] }}"/>
             <form action="/accept/" method="post">
-                <button name="Accept" type="submit" value= '(invite[0])'>Annehmen</button>
+                <button name="Accept" type="submit" value="{{ invite[0] }}" >Annehmen</button>
             </form>
             <button>Ablehnen</button>
             

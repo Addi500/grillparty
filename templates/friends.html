@@ -10,17 +10,35 @@
     {{ form.hidden_tag() }}
     {{ form.user(class="form-control") }}
     <button class = "test" type="submit">Search</button>
-    
+    <div class = "Friend">
+        <h3>Username</h3>
+        <button>Hinzufügen</button>
+        
+    </div>
+
+</div>
+
 </form>
+<div class ="FriendRequest">
+{% for friend in friends %}
+        <a href="#">
+            <h2>{{ friend[2] }}</h2>
+            <p><td>{{ friend[0] }}</td></p>
+            <input type="hidden" name="info" value="{{ friend[0] }}"/>
+            <form action="/acceptinv/" method="post">
+                <button name="Acceptinvitation" type="submit" value="{{ friend[0] }}" >Annehmen</button>
+            </form>
+            <form action="/declineinv/" method="post">
+                <button name="Declineinvitation" type="submit" value="{{ friend[0] }}" >Annehmen</button>
+            </form>
+        </a>
+        <span class="badge badge-primary">{{ friend[3] }}</span>
+        <hr>
+{% endfor %}
+</div>
 
 </div>
-</div>
 
-<div class = "Friend">
-    <h3>Username</h3>
-    <button>Hinzufügen</button>
-    
-</div>
-</div>
+
 
 {% endblock %}

@@ -139,25 +139,54 @@ def dashbard():
 
 @app.route('/friends', methods= ["GET", "POST"])
 def friends():
+    
     form = Friends()
+    user = session["address"]
     if form.validate_on_submit():
 
         session._get_current_object.__name__
+        
         session["user"] = form.user.data
 
         suchergebnisse = search(conn, cur, "users", session["user"])
         print (suchergebnisse)
 
-    return render_template('friends.html', form=form)
+    return render_template('friends.html', form=form, friends=friends)
+    
 #übergibt gesuchten User. Funktion für Buttons fehlt noch
+@app.route("/acceptinv/", methods=['POST'])
+def AcceptFriends():
+    session._get_current_object.__name__
+    
+    if request.method == 'POST':
+        if request.form['Acceptinvitation'] == '0':
+            print("1")
+        elif request.form['Acceptinvitation'] == '2':
+            print("2")
 
+    forward_message = "Moving Forward..."
 
+    return render_template('friends.html', forward_message=forward_message);    
 
+@app.route("/declineinv/", methods=['POST'])
+def DeclineFriends():
+    session._get_current_object.__name__
+    
+    if request.method == 'POST':
+        if request.form['Declineinvitation'] == '0':
+            print("1")
+        elif request.form['Declineinvitation'] == '2':
+            print("2")
+
+    forward_message = "Moving Forward..."
+
+    return render_template('friends.html', forward_message=forward_message);    
 
 @app.route('/invitations')
 def invitations():
     user = session["address"]
     #user = "test@132.com"
+    
     invites = select_open_party_invites(conn, cur, user)
     print(invites)
     
@@ -166,12 +195,17 @@ def invitations():
 
 @app.route("/accept/", methods=['POST'])
 def Accept():
+    session._get_current_object.__name__
+    
     if request.method == 'POST':
-        if request.form['Accept'] == 'testp3':
+        if request.form['Accept'] == '0':
             print("1")
-        elif request.form['Accept'] == 'testparty1':
+        elif request.form['Accept'] == '2':
             print("2")
+
+    # Abgleich mit db nicht über if sondern anhand Buttonvalue akzeptieren (von 0 auf 1 setzen)
     #Moving forward code
+    
     forward_message = "Moving Forward..."
 
     return render_template('invitations.html', forward_message=forward_message);    
