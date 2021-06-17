@@ -198,7 +198,7 @@ def view_party(conn, cur, party):
 
 def select_parties(conn, cur, user, type):
 	"""
-	returns List of all (own/invited to) parties with all attributes in following order
+	returns List of all (type: own/foreign) parties with all attributes in following order
 	id, title, date, time, address, owner
 
 	TODO: nur kommende partys anzeigen/filtermöglichkeit?
@@ -210,6 +210,7 @@ def select_parties(conn, cur, user, type):
 		FROM parties
 		WHERE owner = ?
 		"""		
+		parameters = [user]
 	elif type == "foreign":
 		script = """
 		SELECT *
@@ -217,10 +218,10 @@ def select_parties(conn, cur, user, type):
 		WHERE id IN (SELECT party_id FROM participants WHERE participant_mail = ? AND accepted = 1)
 		AND owner != ?
 		"""
+		parameters = [user, user]
 	else:
 		print("wrong operation")
 
-	parameters = [user]
 	cur.execute(script, parameters)
 	results = cur.fetchall()
 	return results
