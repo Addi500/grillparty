@@ -155,8 +155,9 @@ def check_for_friend_requests(conn, cur, user, operation):
 	0: friend mail (id)
 	1: friend name
 
+	operation Arg: "my_requests" or "foreign_requests"
 	"""
-	if operation == my_requests:
+	if operation == "my_requests":
 		script = """
 		SELECT users.name, friend2_mail
 		FROM friends
@@ -169,10 +170,10 @@ def check_for_friend_requests(conn, cur, user, operation):
 		"""
 		parameters = [user, user]
 		cur.execute(script, parameters)
-		results = fetchall()
+		results = cur.fetchall()
 		return results
 
-	elif operation == foreign_requests:
+	elif operation == "foreign_requests":
 		script = """
 		SELECT users.name, friend1_mail
 		FROM friends
@@ -188,7 +189,7 @@ def check_for_friend_requests(conn, cur, user, operation):
 		"""
 		parameters = [user, user]
 		cur.execute(script, parameters)
-		results = fetchall()
+		results = cur.fetchall()
 		return results
 	else:
 		print("wrong operation")

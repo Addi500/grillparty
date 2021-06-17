@@ -175,6 +175,8 @@ def friends():
     
     form = Friends()
     user = session["address"]
+    friend_requests_to_me = check_for_friend_requests(conn, cur, user, "foreign_requests")
+
     if form.validate_on_submit():
 
         session._get_current_object.__name__        
@@ -185,7 +187,7 @@ def friends():
 
         
         friends = select_friends(conn, cur, user)
-        friend_requests_to_me = check_for_friend_requests(conn, cur, user, "foreign_requests")
+       
 
     return render_template('friends.html', form=form, friend_requests_to_me=friend_requests_to_me)
     
