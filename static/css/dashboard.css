@@ -94,7 +94,25 @@
     margin-left: 200px;
   }
 
-  
+  .Invites {
+    display:flex;
+    align-items: center;
+  }
+
+  .DateTime {
+    display:flex;
+    align-items: center;
+  }
+
+  .Invites {
+    display:flex;
+    align-items: center;
+  }
+
+  .address {
+    display:flex;
+    align-items: center;
+  }
   
  
   
