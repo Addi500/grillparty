@@ -5,6 +5,7 @@ import sqlite3
 from sqlite3.dbapi2 import Time
 from flask import Flask, render_template, request, redirect
 from flask.globals import session
+from flask.helpers import url_for
 from flask_wtf import FlaskForm
 from wtforms import widgets
 from wtforms.fields import StringField, PasswordField, SubmitField, TextAreaField
@@ -143,27 +144,42 @@ def newevent():
         return render_template("registrate_success.html")
     return render_template("newevent.html", form=form)
 
-@app.route("/dashboard")
+@app.route("/dashboard", methods=['POST', 'GET'])
 def dashboard():
     session._get_current_object.__name__
     user = session["user"]
-
-    if "Bearbeiten" in request.method:
-        party_id = request.method["Bearbeiten"]
-        forward_message = "Moving Forward..."
-
-        return render_template('bearbeiten.html', forward_message=forward_message, party_id=party_id);
-
     own_parties = select_parties(conn, cur, user, "own")
     foreign_parties = select_parties(conn, cur, user, "foreign")
-    
-    
-    return render_template("dashboard.html", foreign_parties=foreign_parties, own_parties=own_parties)
 
-@app.route("/bearbeiten", methods=['POST', 'GET'])
-def Bearbeiten():
-    form = itemlist()
+
+    if request.method == "POST":
+        
+        Submit = request.form.get("submit")
+        
+        print(Submit)
+        forward_message = "Moving Forward..."
+        #party_info = view_party(conn, cur, party_id)
+        #return render_template('bearbeiten.html', forward_message=forward_message,own_parties=own_parties, Submit=Submit)
+        return redirect(url_for('bearbeiten', pid=Submit))
     
+
+    return render_template("dashboard.html", foreign_parties=foreign_parties, own_parties=own_parties)   
+
+@app.route("/bearbeiten/<pid>", methods=['POST', 'GET'])
+def bearbeiten(pid):
+    #pid = party[0] gibt den Value zurück
+    #adriansfkt.getPartynamen(pid) (für dich!, deine Select where Party ID == pid)
+    #partyname = adriansfkt.getPartynamen(pid)
+    #render_template("bearbeiten.html", partyname = partyname )
+    
+    print(pid)
+    return "Erfolg"
+   # form = itemlist()
+   # party_info = view_party(conn, cur, party_id)
+    
+    
+
+
     #if request.method == 'POST':
     #    session._get_current_object.__name__
     #    if request.form['Acceptinvitation'] == '0':
@@ -172,12 +188,9 @@ def Bearbeiten():
     #        print("2")
     
 
-    party_info = view_party(conn, cur, party_id)
+  
 
 
-    forward_message = "Moving Forward..."
-
-    return render_template('bearbeiten.html', forward_message=forward_message);    
 
 
 
