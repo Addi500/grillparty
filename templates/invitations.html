@@ -6,41 +6,41 @@
 
 <div class = "Einladungen">
     <p> Sie haben eine Einladung von: , Art: (Freundschaft/Veranstaltung</p>
-  
+    <div class="container-1">
 
-    {% for invite in invites %}
-    <p>
-        <div class = "box">
-        <h2>{{ invite[1] }}</h2>
-        <div class = "Invites">
-        <p>ID<td>{{ invite[0] }}</td></p>
-        </div>
-        <div class = "DateTime">
-        <p>Datum:<td>{{ invite[2] }}</td></p>
-        <p>Time:</p>
-        </div>
-        <div class = "address">
-        <p>Adresse:   <td>{{ invite[3] }}</td></p>
-        <p>Von:      <td>{{ invite[4] }}</td></p>
-        </div>
-        <div class = "buttons">
-        <input type="hidden" name="info" value="{{ invite[0] }}" />
-        <form action="/accept/" method="post">
-            <button name="Accept" type="submit" value="{{ invite[0] }}">Annehmen</button>
-        </form>
-        <form action="/decline/" method="post">
-            <button name="Decline" type="submit" value="{{ invite[0] }}">Ablehnen</button>
-        </form>
-    </div>
-    </div>
-    </p>
+        {% for invite in invites %}
+        <p>
+
+            <h2>{{ invite[1] }}</h2>
+            <div class="Invites">
+                <p>ID<td>{{ invite[0] }}</td></p>
+            </div>
+            <div class="DateTime">
+                <p>Datum:<td>{{ invite[2] }}</td></p>
+                <p>Time:</p>
+            </div>
+            <div class="address">
+                <p>Adresse:   <td>{{ invite[3] }}</td></p>
+                <p>Von:      <td>{{ invite[4] }}</td></p>
+            </div>
+            <div class="buttons">
+                <input type="hidden" name="info" value="{{ invite[0] }}" />
+                <form action="/accept/" method="post">
+                    <button name="Accept" type="submit" value="{{ invite[0] }}">Annehmen</button>
+                </form>
+                <form action="/decline/" method="post">
+                    <button name="Decline" type="submit" value="{{ invite[0] }}">Ablehnen</button>
+                </form>
+
+            </div>
+        </p>
         <span class="badge badge-primary">{{ invite[3] }}</span>
         <hr>
-</div>
 
 
-    {% endfor %}
 
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

@@ -1,15 +1,6 @@
 import sqlite3 as sql
 import os
 
-
-"""
-TODO:
-
-- SQL ERROR HANDLING
-"""
-
-
-
 std_path = "database.db"
 
 def write_to_db(connection, cursor, sql_script, parameters=[]):
@@ -194,6 +185,46 @@ def check_for_friend_requests(conn, cur, user, operation):
 	else:
 		print("wrong operation")
 
+def view_party(conn, cur, party):
+	script = """
+	SELECT *
+	FROM parties
+	WHERE id = ?;
+	"""
+	parameters = [party]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+	return results
+
+def select_parties(conn, cur, user, type):
+	"""
+	returns List of all (own/invited to) parties with all attributes in following order
+	id, title, date, time, address, owner
+
+	TODO: nur kommende partys anzeigen/filtermöglichkeit?
+	"""
+	script = ""
+	if type == "own":
+		script = """
+		SELECT *
+		FROM parties
+		WHERE owner = ?
+		"""		
+	elif type == "foreign":
+		script = """
+		SELECT *
+		FROM parties
+		WHERE id IN (SELECT party_id FROM participants WHERE participant_mail = ? AND accepted = 1)
+		AND owner != ?
+		"""
+	else:
+		print("wrong operation")
+
+	parameters = [user]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+	return results
+
 def select_friends(conn, cur, user):
 	"""
 	Tupel:
@@ -215,15 +246,15 @@ def select_friends(conn, cur, user):
 	friends = cur.fetchall()
 	return friends
 
-def search(conn, cur, table, begriff):
+def search_user(conn, cur, begriff):
 	
 	script = """
 	SELECT *
-	FROM ?
-	WHERE name = ?;
+	FROM users
+	WHERE name LIKE (?);
 	"""
 
-	parameters = [table, begriff]
+	parameters = [begriff]
 	cur.execute(script, parameters)
 	results = cur.fetchall()
 
@@ -251,25 +282,11 @@ def check_duplicate(conn, cur, table, column, value):
 			return True
 	return False
 
-def select_parties_of_user(conn, cur, user):
-	#only returns own parties right now
-	
-	script = """
-	SELECT title, date, address
-	FROM parties
-	WHERE owner = ?;
-	"""
-	parameters=[user]
-	cur.execute(script, parameters)
-	results = cur.fetchall()
-
-	return results
-
 def select_open_party_invites(conn, cur, user):
 	#returns list of titles, date and address of open invites to parties
 	
 	script = """
-	SELECT id, title, date, address, owner
+	SELECT id, title, date, address, time, owner
 	FROM parties
 	WHERE parties.id
 	IN (SELECT party_id FROM participants WHERE participant_mail = ? AND accepted = 0);
@@ -289,6 +306,42 @@ def select_itemlist(conn, cur, party):
 	WHERE party_id = ?;
 	"""
 	parameters = [party]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+	return results
+
+def change_itemlist(conn, cur, party, item, operation, user=None):
+	"""
+	Arg: operations
+	"delete"
+	"assign_to"
+	"unassign_to"
+	"""
+
+	if operation == "delete":
+		script = """
+		DELETE FROM itemlist
+		WHERE party_id = ? AND item = ?
+		"""
+		parameters = [party, item]
+	elif operation == "assign_to":
+		script = """
+		UPDATE itemlist
+		SET brought_by = ?
+		WHERE party_id = ? AND item = ?
+		"""
+		if user == None:
+			print("user must not be NULL")
+			raise ValueError()
+		parameters = [user, party, item]
+	elif operation == "unassign_to":
+		script = """
+		UPDATE itemlist
+		SET brought_by = NULL
+		WHERE party_id = ? AND item = ?
+		"""
+		parameters = [party, item]
+
 	cur.execute(script, parameters)
 	results = cur.fetchall()
 	return results

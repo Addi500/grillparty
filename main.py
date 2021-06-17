@@ -11,7 +11,7 @@ from wtforms.fields import StringField, PasswordField, SubmitField, TextAreaFiel
 from wtforms.fields.core import RadioField, SelectMultipleField
 from wtforms.fields.html5 import DateField, SearchField
 from wtforms.validators import Email, InputRequired, data_required, email, equal_to, length
-from backend import *
+from db_connection import *
 from wtforms_components import TimeField
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
@@ -52,7 +52,7 @@ class NewEvent(FlaskForm):
     submit = SubmitField("Erstellen")
 
 
-class Friends(FlaskForm):
+class AddFriend(FlaskForm):
     user = SearchField()
     submit = SubmitField("Suchen")
 
@@ -172,24 +172,35 @@ def Bearbeiten():
 
 @app.route('/friends', methods= ["GET", "POST"])
 def friends():
-    
-    form = Friends()
     user = session["address"]
+    
     friend_requests_to_me = check_for_friend_requests(conn, cur, user, "foreign_requests")
+    friends = select_friends(conn, cur, user)
 
-    if form.validate_on_submit():
-
-        session._get_current_object.__name__        
-        session["user_search"] = form.user.data
-
-        suchergebnisse = search(conn, cur, "users", session["user_search"])
-        print (suchergebnisse)
-
+    if request.method == "POST":
+        print("here i am")
+        if "Acceptinvitation" in request.form:
+            print("accept friend")
+            friend_request(conn, cur, user, request.form["Acceptinvitation"],"accept")
+        elif "Declineinvitation" in request.form:
+            friend_request(conn, cur, user, request.form["Acceptinvitation"],"deny")
         
         friends = select_friends(conn, cur, user)
        
+    return render_template('friends.html', friend_requests_to_me=friend_requests_to_me)
 
-    return render_template('friends.html', form=form, friend_requests_to_me=friend_requests_to_me)
+@app.route('/addfriend', methods = ["GET", "POST"])
+def addfriend():
+    form = AddFriend()
+    user = session["address"]
+
+    if form.validate_on_submit():
+        session._get_current_object.__name__        
+        session["user_search"] = form.user.data
+
+        suchergebnisse = search_user(conn, cur, session["user_search"])
+        print (suchergebnisse)
+    return render_template('addfriend.html', form=form)
     
 #übergibt gesuchten User. Funktion für Buttons fehlt noch
 @app.route("/acceptinv/", methods=['POST'])
@@ -225,12 +236,13 @@ def DeclineFriends():
 @app.route('/invitations')
 def invitations():
     user = session["address"]
-    #user = "test@132.com"
     
     invites = select_open_party_invites(conn, cur, user)
     print(invites)
-    
-    #check_for_friend_requests(conn, cur, user)
+
+    # Abgleich mit db nicht über if sondern anhand Buttonvalue akzeptieren (von 0 auf 1 setzen)
+    #Moving forward code
+
     return render_template('invitations.html', invites = invites)
 
 @app.route("/accept/", methods=['POST'])
@@ -242,29 +254,27 @@ def Accept():
     SET accepted = 1
     WHERE party_id = ? AND participant_mail = ?;
     """
+    print("accepted1")
+    cur.execute(script_accept, [request.form['Accept'], session["address"]])
+    conn.commit()    
+    
+    forward_message = "Moving Forward..."
+    return render_template('dashboard.html', forward_message=forward_message);
+
+@app.route("/decline/", methods=['POST'])
+def Decline():
+    session._get_current_object.__name__
 
     script_decline = """
     DELETE FROM participants
     WHERE party_id = ? AND participant_mail = ?;
     """
+    print("Declined2")
+    cur.execute(script_decline, [request.form['Decline'], session["address"]])
+    conn.commit()
 
-    if request.method == 'POST':
-        if "Accept" in request.form:
-            print("accepted1")
-            cur.execute(script_accept, [request.form['Accept'], session["address"]])
-            conn.commit()
-    #WENN DECLINE
-        if "Decline" in request.form:
-            print("Declined2")
-            cur.execute(script_decline, [request.form['Decline'], session["address"]])
-            conn.commit()
-
-    # Abgleich mit db nicht über if sondern anhand Buttonvalue akzeptieren (von 0 auf 1 setzen)
-    #Moving forward code
-    
     forward_message = "Moving Forward..."
-
-    return render_template('dashboard.html', forward_message=forward_message);    
+    return render_template('dashboard.html', forward_message=forward_message);
     
 #keine Klasse bisher angelegt, benötigt Übergabe der Einladungen aus der
 #Datenbank, Buttons noch ohne Funktion, Einladungsart (Freunde / Veranstaltung)
