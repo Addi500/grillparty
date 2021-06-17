@@ -274,7 +274,21 @@ def Decline():
     conn.commit()
 
     forward_message = "Moving Forward..."
-    return render_template('dashboard.html', forward_message=forward_message);
+    return render_template('dashboard.html', forward_message=forward_message)
+
+
+@app.route("/logout/", methods=['POST'])
+def Logout():
+    session._get_current_object.__name__
+    session["address"]
+    forward_message = "Moving Forward..."
+    if request.method == 'POST':
+        session['logged_in']=False
+        print("Ich bin hier")
+        return render_template('start.html')
+        
+        
+    return render_template('dashboard.html', forward_message=forward_message)
     
 #keine Klasse bisher angelegt, benötigt Übergabe der Einladungen aus der
 #Datenbank, Buttons noch ohne Funktion, Einladungsart (Freunde / Veranstaltung)

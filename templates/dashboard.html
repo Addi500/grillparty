@@ -9,12 +9,16 @@
         <a class="navbar-brand" href="/dashboard">Grillparty</a></div>
         <div class="collapse navbar-collapse"></div>
         <ul class="nav navbar-nav navbar-right">
-            <a class="nav-link active" href="/">Logout</a>
+        <form action="/logout/" method="post">
             
+            <button class="btn btn-light" type = "submit">Logout</button>
+            
+        </form>
                 
             </ul>
         </ul></div>
         </nav>
+
 <!-- Side navigation -->
 <div class="sidenav">
     <a href="/newevent">Veranstaltung erstellen</a>
@@ -45,5 +49,11 @@
 </body>
 
 {% endblock %}
+
+
+{% else %}
+<p>Loggen Sie sich bitte ein</p>
+
+
 {% endif %}
 {% endblock %}
