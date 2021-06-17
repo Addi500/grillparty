@@ -3,7 +3,7 @@ from datetime import date
 from re import UNICODE
 import sqlite3
 from sqlite3.dbapi2 import Time
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from flask.globals import session
 from flask_wtf import FlaskForm
 from wtforms import widgets
@@ -80,11 +80,11 @@ def registrate():
     form = Registrate()
     if form.validate_on_submit():
         session._get_current_object.__name__
-        session["User"] = form.User.data
-        session["address"] = form.mailaddress.data
+        session["username"] = form.User.data
+        session["user"] = form.mailaddress.data
         session["password"] = form.password.data
         print("if ")
-        insert_into_users(conn, cur, session["address"], session["User"], session["password"])
+        insert_into_users(conn, cur, session["user"], session["username"], session["password"])
         return render_template("registrate_success.html")
     return render_template("registrate.html", form=form)
 
@@ -98,16 +98,15 @@ def login():
     if form.validate_on_submit():
         session._get_current_object.__name__
         
-        session["address"] = form.mailaddress.data
+        session["user"] = form.mailaddress.data
         session["password"] = form.password.data
         
         print("if ")
-        if check_login(conn, cur, session["address"], session["password"]):
+        if check_login(conn, cur, session["user"], session["password"]):
             print("correct pw")
             
-            session['logged_in']=True
-            #current_user = session["address"] 
-            return render_template("dashboard.html")
+            session['logged_in']=True 
+            return redirect("/dashboard")
         else:
             print("wrong pw")
             #falsches Passwort
@@ -120,9 +119,8 @@ def login():
 #genutzte Vorlage für Zutatenliste - SQL Speicherung auch vorhanden 
 def newevent():
     form = NewEvent()
-    
-    ###tbd: USER NAME ÜBERGEBEN!!!!
-    user = "test2@123.com"
+   
+    user = session["user"]
 
 
     if form.validate_on_submit():
@@ -146,22 +144,36 @@ def newevent():
     return render_template("newevent.html", form=form)
 
 @app.route("/dashboard")
-def dashbard():
+def dashboard():
     session._get_current_object.__name__
-    
-    
-    return render_template("dashboard.html")
+    user = session["user"]
 
-@app.route("/bearbeiten", methods=['POST'])
+    if "Bearbeiten" in request.method:
+        party_id = request.method["Bearbeiten"]
+        forward_message = "Moving Forward..."
+
+        return render_template('bearbeiten.html', forward_message=forward_message, party_id=party_id);
+
+    own_parties = select_parties(conn, cur, user, "own")
+    foreign_parties = select_parties(conn, cur, user, "foreign")
+    
+    
+    return render_template("dashboard.html", foreign_parties=foreign_parties, own_parties=own_parties)
+
+@app.route("/bearbeiten", methods=['POST', 'GET'])
 def Bearbeiten():
     form = itemlist()
     
-    if request.method == 'POST':
-        session._get_current_object.__name__
-        if request.form['Acceptinvitation'] == '0':
-            print("1")
-        elif request.form['Acceptinvitation'] == '2':
-            print("2")
+    #if request.method == 'POST':
+    #    session._get_current_object.__name__
+    #    if request.form['Acceptinvitation'] == '0':
+    #        print("1")
+    #    elif request.form['Acceptinvitation'] == '2':
+    #        print("2")
+    
+
+    party_info = view_party(conn, cur, party_id)
+
 
     forward_message = "Moving Forward..."
 
@@ -172,7 +184,7 @@ def Bearbeiten():
 
 @app.route('/friends', methods= ["GET", "POST"])
 def friends():
-    user = session["address"]
+    user = session["user"]
     
     friend_requests_to_me = check_for_friend_requests(conn, cur, user, "foreign_requests")
     friends = select_friends(conn, cur, user)
@@ -189,10 +201,13 @@ def friends():
        
     return render_template('friends.html', friend_requests_to_me=friend_requests_to_me)
 
+#@app.route(("/party/" + party_id))
+
+
 @app.route('/addfriend', methods = ["GET", "POST"])
 def addfriend():
     form = AddFriend()
-    user = session["address"]
+    user = session["user"]
 
     if form.validate_on_submit():
         session._get_current_object.__name__        
@@ -235,7 +250,7 @@ def DeclineFriends():
 
 @app.route('/invitations')
 def invitations():
-    user = session["address"]
+    user = session["user"]
     
     invites = select_open_party_invites(conn, cur, user)
     print(invites)
@@ -255,7 +270,7 @@ def Accept():
     WHERE party_id = ? AND participant_mail = ?;
     """
     print("accepted1")
-    cur.execute(script_accept, [request.form['Accept'], session["address"]])
+    cur.execute(script_accept, [request.form['Accept'], session["user"]])
     conn.commit()    
     
     forward_message = "Moving Forward..."
@@ -270,7 +285,7 @@ def Decline():
     WHERE party_id = ? AND participant_mail = ?;
     """
     print("Declined2")
-    cur.execute(script_decline, [request.form['Decline'], session["address"]])
+    cur.execute(script_decline, [request.form['Decline'], session["user"]])
     conn.commit()
 
     forward_message = "Moving Forward..."

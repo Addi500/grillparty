@@ -30,21 +30,35 @@
   <title> Grillparty - Dashboard</title>
   <!-- Page content -->
   <div class="main">
-    {% for party in parties %}
-        <a href="#">
-            <h2>{{ parties[1] }}</h2>
-            <p><td>{{ parties[0] }}</td></p>
-            <input type="hidden" name="info" value="{{ parties[0] }}"/>
-            <form action="/bearbeiten" method="post">
-                <button name="Bearbeiten" type="submit" value="{{ parties[0] }}" >Bearbeiten</button>
-            </form>
-            
-        </a>
-        <span class="badge badge-primary">{{ parties[1] }}</span>
-        <hr>
-{% endfor %}
+      <h2> Eigene Parties</h2>
+      {% for party in own_parties %}
+      <a href="#">
+          <h2>{{ party[1] }}</h2>
+          <p><td>{{ party[0] }}</td></p>
+          <input type="hidden" name="info" value="{{ party[0] }}" />
+          <form action="/bearbeiten" method="post">
+              <button name="Bearbeiten" type="submit" value="{{ party[0] }}">Bearbeiten</button>
+          </form>
 
-    </p>
+      </a>
+      <span class="badge badge-primary">{{ party[1] }}</span>
+      <hr>
+      {% endfor %}
+      <h2>Parties von Freunden</h2>
+      {% for party in foreign_parties %}
+      <a href="#">
+          <h2>{{ party[1] }}</h2>
+          <p><td>{{ party[0] }}</td></p>
+          <input type="hidden" name="info" value="{{ party[0] }}" />
+          <form action="/Anzeigen" method="post">
+              <button name="Anzeigen" type="submit" value="{{ party[0] }}">Anzeigen</button>
+          </form>
+
+      </a>
+      <span class="badge badge-primary">{{ party[1] }}</span>
+      <hr>
+      {% endfor %}
+
   </div>
 </body>
 
