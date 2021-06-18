@@ -16,6 +16,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stylesheet.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}" />
 </head>
+
 {% block navbar %}
 <body>
     <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
@@ -57,12 +58,12 @@
     {% endblock %}
 
     <br>
-    <footer class="footer mt-auto py-3 bg-light">
-        <div class="container">
+    <footer class="bg-light text-center text-lg-start">
+        
             <span class="text-muted"> 
                 &copy; authors Adrian Maiworm and Natalie Engemann.
             </span>
-        </div>
+        
     </footer>
 
 </body>

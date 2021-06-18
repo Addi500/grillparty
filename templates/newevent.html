@@ -40,13 +40,14 @@
             <a href="javascript:void(0);" class="add-input" title="Add input"> <img src="/static/plus.png"/></a>
             </div>
         </div>
-    <input type="submit" name="cmdsubmit">
-
+    <br>
+    <input type="submit" name="cmdsubmit" class="btn btn-light">
+    <a href="/dashboard" class="btn btn-dark">Cancel</a>
     </form>
     
-    <br>
     
-    <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+    
+    
     
     {% for field, errors in form.errors.items() %}
     <small class="form-text text-muted ">

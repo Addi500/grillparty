@@ -30,35 +30,72 @@
   <title> Grillparty - Dashboard</title>
   <!-- Page content -->
   <div class="main">
-      <h2> Eigene Parties</h2>
+      <h1> Eigene Parties</h1>
       {% for party in own_parties %}
-      <a href="#">
-          <h2>{{ party[1] }}</h2>
-          <p><td>{{ party[0] }}</td></p>
+      <p>
+          <h3>{{ party[1] }}</h3>
+          <table class = "table">
+            <thead>
+            <tr>
+                <th scope="col">Datum</th>
+                <th scope="col">Uhrzeit</th>
+                <th scope="col">Ort</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <td>{{ party[2] }}</td>
+              <td>{{ party[3] }}</td>
+              <td>{{ party[4] }}</td>
+              
+              
+            </tr>
+          </tbody>
+        </table>
+         
           <input type="hidden" name="info" value="{{ party[0] }}" />
           <form method="post">
-              <button name="submit" type="submit" value="{{ party[0] }}">Bearbeiten</button>
+              <button name="submit" class="btn btn-light" type="submit" value="{{ party[0] }}">Bearbeiten</button>
               
           </form>
 
-      </a>
+        </p>
       <span class="badge badge-primary">{{ party[1] }}</span>
       
       {% endfor %}
-      <h2>Parties von Freunden</h2>
-      {% for party in foreign_parties %}
-      <a href="#">
-          <h2>{{ party[1] }}</h2>
-          <p><td>{{ party[0] }}</td></p>
-          <input type="hidden" name="info" value="{{ party[0] }}" />
-          <form action="/anzeigen/" method="post">
-            
-              <button name="Anzeigen" type="submit" value="{{ party[0] }}">Anzeigen</button>
-          </form>
 
-      </a>
+      <h1>Parties von Freunden</h1>
+      {% for party in foreign_parties %}
+      <p>
+          <h3>{{ party[1] }}</h3>
+        
+          <table class = "table">
+            <thead>
+            <tr>
+                <th scope="col">Datum</th>
+                <th scope="col">Uhrzeit</th>
+                <th scope="col">Ort</th>
+                <th scope="col">Veranstalter</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <td>{{ party[2] }}</td>
+              <td>{{ party[3] }}</td>
+              <td>{{ party[4] }}</td>
+              <td>{{ party[5] }}</td>
+              
+            </tr>
+          </tbody>
+        </table>
+          <input type="hidden" name="info" value="{{ party[0] }}" />
+          
+
+        </p>
       <span class="badge badge-primary">{{ party[1] }}</span>
       <hr>
+    
       {% endfor %}
 
   </div>
@@ -68,8 +105,35 @@
 
 
 {% else %}
-<p>Loggen Sie sich bitte ein</p>
+<body>
+  <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+          <a class="navbar-brand" href="/">Grillparty</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent">
+              <span class="navbar-toggler-icon"></span>
+          </button>
 
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav">
+                  <li class="nav-item">
+                      <a class="nav-link" href="/help">Hilfe</a>
+                  </li>
+          </div>
+          <div class="collapse navbar-collapse"></div>
+          <ul class="nav navbar-nav navbar-right">
+              <li class="nav-item">
+                      <a class="nav-link" href="/login">Anmelden</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/registrate">Registrieren</a>
+                  </li>
+              </ul>
+          </ul></div>
+  </nav>
+
+<h1 class = "Fehler">Loggen Sie sich bitte ein</h1>
+</body>
 
 {% endif %}
 {% endblock %}

@@ -237,17 +237,28 @@ def friends():
 @app.route('/addfriend', methods = ["GET", "POST"])
 def addfriend():
     form = AddFriend()
-    user = session["user"]
-
+    session._get_current_object.__name__  
+    session["user_search"] = form.user.data
+    suchergebnisse = search_user(conn, cur, session["user_search"])
+    
+    print(suchergebnisse)
     if form.validate_on_submit():
         session._get_current_object.__name__        
         session["user_search"] = form.user.data
 
         suchergebnisse = search_user(conn, cur, session["user_search"])
         print (suchergebnisse)
-    return render_template('addfriend.html', form=form)
+        return render_template ('addfriend.html', form=form, suchergebnisse=suchergebnisse)
+    return render_template('addfriend.html', form=form, sucherergebnisse = suchergebnisse)
     
 #übergibt gesuchten User. Funktion für Buttons fehlt noch
+@app.route("/hinzufügen/", methods=['POST'])
+def Hinzufügen():
+    session._get_current_object.__name__
+    #db hinzufügen von Freunden definieren
+    #nach Hinzufügen auf addfriend rendern
+    return 'Erfolg'
+
 @app.route("/acceptinv/", methods=['POST'])
 def AcceptFriends():
     session._get_current_object.__name__
@@ -319,6 +330,8 @@ def accept(pid):
     party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
     print(party)
     items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
+    
+    print(items)
     
     #ändern: change_itemlist()
     

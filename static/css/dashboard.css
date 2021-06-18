@@ -20,6 +20,7 @@
 
   .sidenav a:hover {
     color: #f1f1f1;
+    
   }
 
   @media screen and (max-height: 450px) {
@@ -29,6 +30,8 @@
 
   .main {
     margin-left: 200px; /* neben Sidenav (Dashboard)*/
+    display: block;
+    align-items: inherit;
   }
   
   .container-1 {
@@ -42,17 +45,16 @@
     padding: 15px;
     margin-right: 200px;
   }
-  .datetime {
+  
+  .buttons {
     display:flex;
     align-items: center;
   }
-  .date {
-    width: 50%
+  
+  .Friends {
+    display:flex;
   }
-  .time {
-    width: 50%
-  }
-
+  
   /* Suchleiste auf Freunde-Seite */
   .Search {
       display:flex;
@@ -63,7 +65,7 @@
     width:50%;
     display:flex;
     align-items: center;
-    margin-right: 200px;
+    margin-right: 100px;
   }
   
   .Search h1 {
@@ -90,9 +92,7 @@
     width: 20%;
   }
 
-  .Einladungen {
-    margin-left: 200px;
-  }
+  
 
   .Invites {
     display:flex;
@@ -114,5 +114,31 @@
     align-items: center;
   }
   
- 
+ .Suchergebnisse {
+  display:flex;
+  align-items: center;
+ }
+
+ .Registrate-success {
+   text-align: center;
+ }
+
+body {
   
+  min-height: 100vh;
+  position: relative;
+  margin: 0;
+  padding-bottom: 100px; 
+  box-sizing: border-box;
+}
+
+.Fehler h1{
+  text-align: center;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  height: 100px;
+  width: 100%;
+}

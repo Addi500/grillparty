@@ -2,8 +2,35 @@
 {% block overview%}
 
 <div class="container-1">
-    <p>test</p>
+    <div class = "Partyinfo">
+    <h2>{{ party[1] }}</h2><br>
+    <h2>am {{ party[2] }} um {{ party[3] }}</h2>
+    <h3> Ort: {{ party[3]}} </h3>
+    <p>Sie wurden eingeladen von: {{party[4]}}</p>
+    
+    </div>
+<p>Bitte wählen Sie aus folgender Liste die Elemente aus, die Sie mitbringen möchten:</p>
+
+{% for item in items %}
+        <form>
+            <a href="#">
+                <h2>{{ item[0] }}</h2>
+                <h2>{{ item[1] }}</h2>
+                <input type="hidden" name="info" value="{{ item[0] }}" />
+                
+                </form>
+
+            </a>
+            <span class="badge badge-primary">{{ party[3] }}</span>
+            <hr>
+            <!--{ form.submit() }}-->
+        </form>
+        {% endfor %}
+
+
 
 
 </div>
+
+
 {% endblock %}

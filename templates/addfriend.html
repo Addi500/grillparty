@@ -10,17 +10,17 @@
         <form method="POST" class="form">
             {{ form.hidden_tag() }}
             {{ form.user(class="form-control") }}
-            <button class="test" type="submit">Search</button>
-            <div class="Friend">
-                <h3>Username</h3>
-                <button>Hinzufügen</button>
-
-            </div>
+            <button class="btn btn-light" type="submit">Search</button>
         </form>
+    
     </div>
 
-
-   
+    <div class = "Suchergebnisse">
+    <p>{{suchergebnisse[0]}}</p>
+    <form action="/hinzufügen/" method="post">
+        <button name="Hinzufügen" type="submit" value="{{ suchergebnisse[0] }}" class="btn btn-light">Hinzufügen</button>
+    </form>
+</div>
 
 </div>
     {% endblock %}

@@ -4,28 +4,33 @@
 <div class=" container-1">
 <title> Grillparty - Freunde</title>
 
-<div class="test">
-    <a href="/addfriend">Freunde hinzufügen</a>
-
+<div class = "button">
+    <a href="/addfriend" class="btn btn-secondary btn-lg w-100">Freunde hinzufügen</a>
+</div>
+<br>
+<h2>Neue Freundschaftsanfrage von:</h2>
+<br>
 <div class="FriendRequest">
     {% for friend in friend_requests_to_me %}
-    <a href="#">
+    <div class = "Friends">
+    <p>
         <h2>{{ friend[0] }}</h2>
-        <p><td>{{ friend[1] }}</td></p>
+        
         <input type="hidden" name="info" value="{{ friend[1] }}" />
         <form action="/acceptinv/" method="post">
-            <button name="Acceptinvitation" type="submit" value="{{ friend[1] }}">Annehmen</button>
+            <button name="Acceptinvitation" type="submit" value="{{ friend[1] }}" class="btn btn-light">Annehmen</button>
         </form>
         <form action="/declineinv/" method="post">
-            <button name="Declineinvitation" type="submit" value="{{ friend[1] }}">Ablehnen</button>
+            <button name="Declineinvitation" type="submit" value="{{ friend[1] }}" class="btn btn-dark">Ablehnen</button>
         </form>
-    </a>
+    </p>
     <span class="badge badge-primary">{{ friend[1] }}</span>
     <hr>
+</div>
     {% endfor %}
 </div>
 
-</div>
+
 </div>
 
 

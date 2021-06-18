@@ -1,35 +1,46 @@
 {% extends "dashboard.html" %}
 
-{% block overview%}
+{% block overview %}
 
 <title> Grillparty - Einladungen</title>
 
-<div class = "Einladungen">
-    <p> Sie haben eine Einladung von: , Art: (Freundschaft/Veranstaltung</p>
-    <div class="container-1">
+<div class="container-1">
+    <h1> Veranstaltungseinladungen</h1>
+    
 
         {% for invite in invites %}
         <p>
-
             <h2>{{ invite[1] }}</h2>
-            <div class="Invites">
-                <p>ID<td>{{ invite[0] }}</td></p>
-            </div>
-            <div class="DateTime">
-                <p>Datum:<td>{{ invite[2] }}</td></p>
-                <p>Time:</p>
-            </div>
-            <div class="address">
-                <p>Adresse:   <td>{{ invite[3] }}</td></p>
-                <p>Von:      <td>{{ invite[4] }}</td></p>
-            </div>
+        <table class = "table">
+            <thead>
+            <tr>
+                <th scope="col">Datum</th>
+                <th scope="col">Uhrzeit</th>
+                <th scope="col">Ort</th>
+                <th scope="col">Veranstalter</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <td>{{ invite[2] }}</td>
+              <td>{{ invite[4] }}</td>
+              <td>{{ invite[3] }}</td>
+              <td>{{ invite[5] }}</td>
+              
+              
+            </tr>
+          </tbody>
+        </table>
+            
+            
             <div class="buttons">
                 <input type="hidden" name="info" value="{{ invite[0] }}" />
                 <form  method="post">
-                    <button name="Submit" type="submit" value="{{ invite[0] }}">Annehmen</button>
+                    <button name="Submit" type="submit" value="{{ invite[0] }}" class="btn btn-light">Annehmen</button>
                 </form>
                 <form action="/decline/" method="post">
-                    <button name="Decline" type="submit" value="{{ invite[0] }}">Ablehnen</button>
+                    <button name="Decline" type="submit" value="{{ invite[0] }}" class="btn btn-dark">Ablehnen</button>
                 </form>
 
             </div>
@@ -40,7 +51,7 @@
 
 
         {% endfor %}
-    </div>
+    
 </div>
 
 {% endblock %}
