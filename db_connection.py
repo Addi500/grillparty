@@ -1,5 +1,6 @@
 import sqlite3 as sql
 import os
+from datetime import datetime
 
 std_path = "database.db"
 
@@ -203,6 +204,9 @@ def view_party(conn, cur, party):
 	parameters = [party]
 	cur.execute(script, parameters)
 	results = cur.fetchone()
+	results = list(results)
+	results[2] = readable_date_time(results[2], "date")
+	results[3] = readable_date_time(results[3], "time")
 	return results
 
 def select_parties(conn, cur, user, type):
@@ -310,8 +314,9 @@ def select_itemlist(conn, cur, party):
 	#returns list of all items of party with name who brings it
 
 	script = """
-	SELECT item, brought_by
+	SELECT party_id, item, brought_by, users.name
 	FROM itemlist
+	INNER JOIN users ON itemlist.brought_by = users.name
 	WHERE party_id = ?;
 	"""
 	parameters = [party]
@@ -356,3 +361,20 @@ def change_itemlist(conn, cur, party, item, operation, user=None):
 	cur.execute(script, parameters)
 	results = cur.fetchall()
 	return results
+
+###util-funktionen
+
+def readable_date_time(input, type):
+	"""
+	type: "date" or "time"
+	"""
+	if type == "date":
+		datetimeobject = datetime.strptime(input, '%Y-%m-%d')
+		return datetimeobject.strftime("%d.%m.%Y")
+	elif type == "time":
+		datetimeobject = datetime.strptime(input, '%H:%M:%S')
+		return datetimeobject.strftime("%H:%M")
+	else:
+		print("wrong type")
+
+	

@@ -1,28 +1,53 @@
 {% extends "dashboard.html" %}
 {% block overview%}
+<title>Grillparty bearbeiten</title>
 <div class="container-1">
-    <p>test</p>
+    <h1>{{ party[1] }}</h1>
+    <h2>am {{ party[2] }} um {{ party[3] }}</h2>
 
-    <p>{{ party[1] }}</p>
-    <p>{{ party[2] }}</p>
+    <form method="POST">
+        {{ form.hidden_tag() }}
 
-
-    {% for item in items %}
-    <form>
-        <a href="#">
-            <h2>{{ item[0] }}</h2>
-            <h2>{{ item[1] }}</h2>
-            <input type="hidden" name="info" value="{{ item[0] }}" />
-            <form action="/bearbeiten" method="post">
-                <button name="Bearbeiten" type="submit" value="{{ party[0] }}">Bearbeiten</button>
-            </form>
-
-        </a>
-        <span class="badge badge-primary">{{ party[3] }}</span>
-        <hr>
-        <!--{ form.submit() }}-->
+        {{ form.title.label(class="form-label") }}
+        {{ form.title(class="form-control") }}
+        <br>
+        <div class="datetime">
+            <div class="date">
+                {{ form.date.label(class="form-label") }}
+                {{ form.date(class="form-control") }}
+                <br>
+            </div>
+            <div class="time">
+                {{ form.time.label(class="form-label") }}
+                {{ form.time(class="form-control") }}
+                <br>
+            </div>
+        </div>
+        {{ form.address.label(class="form-label") }}
+        {{ form.address(class="form-control") }}
+        <br>
+        {{ form.Teilnehmer.label(class="form-label") }}
+        {{ form.Teilnehmer(class="form-control") }}
+        <br>
     </form>
-    {% endfor %}
+
+
+        {% for item in items %}
+        <form>
+            <a href="#">
+                <h2>{{ item[0] }}</h2>
+                <h2>{{ item[1] }}</h2>
+                <input type="hidden" name="info" value="{{ item[0] }}" />
+                <form action="/bearbeiten" method="post">
+                    <button name="Bearbeiten" type="submit" value="{{ party[0] }}">Bearbeiten</button>
+                </form>
+
+            </a>
+            <span class="badge badge-primary">{{ party[3] }}</span>
+            <hr>
+            <!--{ form.submit() }}-->
+        </form>
+        {% endfor %}
 </div>
 
 {% endblock %}
