@@ -25,8 +25,8 @@
             </div>
             <div class="buttons">
                 <input type="hidden" name="info" value="{{ invite[0] }}" />
-                <form action="/accept/" method="post">
-                    <button name="Accept" type="submit" value="{{ invite[0] }}">Annehmen</button>
+                <form  method="post">
+                    <button name="Submit" type="submit" value="{{ invite[0] }}">Annehmen</button>
                 </form>
                 <form action="/decline/" method="post">
                     <button name="Decline" type="submit" value="{{ invite[0] }}">Ablehnen</button>

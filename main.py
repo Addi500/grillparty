@@ -7,6 +7,7 @@ from flask import Flask, render_template, request, redirect
 from flask.globals import session
 from flask.helpers import url_for
 from flask_wtf import FlaskForm
+from werkzeug.wrappers import AcceptMixin
 from wtforms import widgets
 from wtforms.fields import StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.fields.core import RadioField, SelectMultipleField
@@ -167,7 +168,7 @@ def dashboard():
 
 @app.route("/bearbeiten/<pid>", methods=['POST', 'GET'])
 def bearbeiten(pid):
-    #pid = party[0] gibt den Value zurück
+    #pid = party[0] #gibt den Value zurück
     #adriansfkt.getPartynamen(pid) (für dich!, deine Select where Party ID == pid)
     #partyname = adriansfkt.getPartynamen(pid)
     #render_template("bearbeiten.html", partyname = partyname )
@@ -196,7 +197,21 @@ def bearbeiten(pid):
     #        print("1")
     #    elif request.form['Acceptinvitation'] == '2':
     #        print("2")
+#@app.route("/Anzeigen/<pid>", methods=['POST', 'GET'])
+#def anzeigen(pid):
+    #pid = party[0] gibt den Value zurück
+    #adriansfkt.getPartynamen(pid) (für dich!, deine Select where Party ID == pid)
+    #partyname = adriansfkt.getPartynamen(pid)
+    #render_template("bearbeiten.html", partyname = partyname )
+    #party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
+    #print(party)
+    #items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
     
+    #print(submit)
+    
+    #return render_template("anzeigen.html", party=party, items = items)
+
+
 @app.route('/friends', methods= ["GET", "POST"])
 def friends():
     user = session["user"]
@@ -263,20 +278,30 @@ def DeclineFriends():
 
     return render_template('friends.html', forward_message=forward_message);    
 
-@app.route('/invitations')
+@app.route('/invitations', methods=['POST', 'GET'])
 def invitations():
+    session._get_current_object.__name__
     user = session["user"]
     
     invites = select_open_party_invites(conn, cur, user)
     print(invites)
+    if request.method == "POST":
+        
+        Submit = request.form.get("Submit")
+        
+        print(Submit)
+        forward_message = "Moving Forward..."
+        #party_info = view_party(conn, cur, party_id)
+        #return render_template('bearbeiten.html', forward_message=forward_message,own_parties=own_parties, Submit=Submit)
+        return redirect(url_for('accept', pid=Submit))
 
     # Abgleich mit db nicht über if sondern anhand Buttonvalue akzeptieren (von 0 auf 1 setzen)
     #Moving forward code
 
     return render_template('invitations.html', invites = invites)
 
-@app.route("/accept/", methods=['POST'])
-def Accept():
+@app.route("/accept/<pid>", methods=['POST', 'GET'])
+def accept(pid):
     session._get_current_object.__name__
     
     script_accept = """
@@ -285,14 +310,20 @@ def Accept():
     WHERE party_id = ? AND participant_mail = ?;
     """
     print("accepted1")
-    cur.execute(script_accept, [request.form['Accept'], session["user"]])
+    print(pid, session["user"])
+    cur.execute(script_accept, [pid, session["user"]])
     conn.commit()   
+    print(pid)
+
     
-    items = select_itemlist(conn, cur, [request.form['Accept']])
+    party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
+    print(party)
+    items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
+    
     #ändern: change_itemlist()
     
-    forward_message = "Moving Forward..."
-    return render_template('dashboard.html', forward_message=forward_message);
+    #return 'Erfolg'
+    return render_template('anzeigen.html', items = items, party = party)
 
 @app.route("/decline/", methods=['POST'])
 def Decline():
