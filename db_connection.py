@@ -3,9 +3,20 @@ import os
 
 std_path = "database.db"
 
+###Grundfunktionen:
+
+def establish_connection(sql_filepath=std_path):
+	connection = sql.connect(sql_filepath, check_same_thread=False)
+	cursor = connection.cursor()
+	return connection, cursor
+
 def write_to_db(connection, cursor, sql_script, parameters=[]):
-	cursor.execute(sql_script, parameters)
-	connection.commit()
+	try:
+		cursor.execute(sql_script, parameters)
+		connection.commit()
+	except:
+		### ERROR HANDLING
+		pass
 
 def initial_db(name=std_path):
 	if os.path.exists(name):
@@ -15,10 +26,9 @@ def initial_db(name=std_path):
 		conn, cur = establish_connection(name)
 		initialization_script = """
 				CREATE TABLE users (
-				mailaddress TEXT NOT NULL,
+				mailaddress TEXT NOT NULL PRIMARY KEY,
 				name TEXT NOT NULL,
-				password TEXT NOT NULL,
-				PRIMARY KEY (mailaddress));
+				password TEXT NOT NULL);
 				"""
 		write_to_db(conn, cur, initialization_script)
 
@@ -64,10 +74,7 @@ def initial_db(name=std_path):
 		write_to_db(conn, cur, initialization_script)
 		#bonus: encrypt passwords. http://blog.dornea.nu/2011/07/28/howto-keep-your-passwords-safe-using-sqlite-and-sqlcipher/
 
-def establish_connection(sql_filepath=std_path):
-	connection = sql.connect(sql_filepath, check_same_thread=False)
-	cursor = connection.cursor()
-	return connection, cursor
+###Insert-Funktionen
 
 def insert_into_users(conn, cur, mailaddress, name, password):
 	script = """
@@ -113,6 +120,8 @@ def insert_into_friends(conn, cur, friend1, friend2):
 	"""
 	parameters = [friend1, friend2]
 	write_to_db(conn, cur, script, parameters)
+
+###Check- und Select-Funktionen
 
 def friend_request(conn, cur, requesting_user, requested_user, operation):
 	"""
@@ -198,7 +207,7 @@ def view_party(conn, cur, party):
 
 def select_parties(conn, cur, user, type):
 	"""
-	returns List of all (type: own/foreign) parties with all attributes in following order
+	returns List of all (type: own/foreign and accepted) parties with all attributes in following order
 	id, title, date, time, address, owner
 
 	TODO: nur kommende partys anzeigen/filtermöglichkeit?
@@ -261,15 +270,15 @@ def search_user(conn, cur, begriff):
 
 	return results
 
-	###db abfrage
-	###returns
-
 def check_login(conn, cur, mailaddress, password):
-	cur.execute("SELECT password FROM users WHERE mailaddress = ?;", (mailaddress,))
-	pw = cur.fetchone()[0]
-	if pw == password:
-		return True
-	else:
+	try:
+		cur.execute("SELECT password FROM users WHERE mailaddress = ?;", [mailaddress])
+		pw = cur.fetchone()[0]
+		if pw == password:
+			return True
+		else:
+			return False
+	except:
 		return False
 
 def check_duplicate(conn, cur, table, column, value):
@@ -278,10 +287,9 @@ def check_duplicate(conn, cur, table, column, value):
 	cur.execute("SELECT * FROM ? WHERE ? = ?;", (table, column, value))
 	for row in cur:
 		if len(cur.fetchone()) == 0:
-			continue
+			return False
 		else:
-			return True
-	return False
+			return True	
 
 def select_open_party_invites(conn, cur, user):
 	#returns list of titles, date and address of open invites to parties
@@ -310,6 +318,8 @@ def select_itemlist(conn, cur, party):
 	cur.execute(script, parameters)
 	results = cur.fetchall()
 	return results
+
+###UPDATE-Funktionen
 
 def change_itemlist(conn, cur, party, item, operation, user=None):
 	"""
@@ -346,17 +356,3 @@ def change_itemlist(conn, cur, party, item, operation, user=None):
 	cur.execute(script, parameters)
 	results = cur.fetchall()
 	return results
-
-###strukturänderungen db (neue spalte bei participants, ob zugesagt)
-
-
-	#wenn leer, nichts vorhanden
-	#wenn wert in tupel: duplikat
-
-
-#if __name__ == "__main__":
-#	print("first test")
-
-#	dbname = "test19h.db"
-
-#	conn, cur = establish_connection()

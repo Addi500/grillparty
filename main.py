@@ -20,7 +20,7 @@ from flask_login import LoginManager, UserMixin, login_required, login_user, log
 app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = 'secretKeyForCookieGeneration'
 
-db_name = "dbrun3.db"
+db_name = "dbrun4.db"
 initial_db(db_name)
 conn, cur = establish_connection(db_name)
 
