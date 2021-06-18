@@ -202,7 +202,7 @@ def view_party(conn, cur, party):
 	"""
 	parameters = [party]
 	cur.execute(script, parameters)
-	results = cur.fetchall()
+	results = cur.fetchone()
 	return results
 
 def select_parties(conn, cur, user, type):

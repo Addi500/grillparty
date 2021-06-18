@@ -171,13 +171,17 @@ def bearbeiten(pid):
     #adriansfkt.getPartynamen(pid) (für dich!, deine Select where Party ID == pid)
     #partyname = adriansfkt.getPartynamen(pid)
     #render_template("bearbeiten.html", partyname = partyname )
+    party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
+    print(party)
+    items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
     
     print(pid)
-    return "Erfolg"
+    #return "Erfolg"
+    return render_template("bearbeiten.html", party=party, items = items)
+
    # form = itemlist()
    # party_info = view_party(conn, cur, party_id)
-    
-    
+       
 
 
     #if request.method == 'POST':
@@ -187,14 +191,6 @@ def bearbeiten(pid):
     #    elif request.form['Acceptinvitation'] == '2':
     #        print("2")
     
-
-  
-
-
-
-
-
-
 @app.route('/friends', methods= ["GET", "POST"])
 def friends():
     user = session["user"]
@@ -284,7 +280,10 @@ def Accept():
     """
     print("accepted1")
     cur.execute(script_accept, [request.form['Accept'], session["user"]])
-    conn.commit()    
+    conn.commit()   
+    
+    items = select_itemlist(conn, cur, [request.form['Accept']])
+    #ändern: change_itemlist()
     
     forward_message = "Moving Forward..."
     return render_template('dashboard.html', forward_message=forward_message);
@@ -307,11 +306,11 @@ def Decline():
 
 @app.route("/logout/", methods=['POST'])
 def Logout():
-    session._get_current_object.__name__
-    session["address"]
+    session._get_current_object.__name__    
     forward_message = "Moving Forward..."
     if request.method == 'POST':
         session['logged_in']=False
+        session["address"] = None
         print("Ich bin hier")
         return render_template('start.html')
         
