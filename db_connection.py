@@ -16,7 +16,7 @@ def write_to_db(connection, cursor, sql_script, parameters=[]):
 		connection.commit()
 	except:
 		### ERROR HANDLING
-		pass
+		print("SQLError")
 
 def initial_db(name=std_path):
 	if os.path.exists(name):
