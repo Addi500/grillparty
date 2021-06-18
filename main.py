@@ -199,17 +199,17 @@ def bearbeiten(pid):
     #        print("2")
 #@app.route("/Anzeigen/<pid>", methods=['POST', 'GET'])
 #def anzeigen(pid):
-    #pid = party[0] gibt den Value zurück
-    #adriansfkt.getPartynamen(pid) (für dich!, deine Select where Party ID == pid)
-    #partyname = adriansfkt.getPartynamen(pid)
-    #render_template("bearbeiten.html", partyname = partyname )
-    #party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
-    #print(party)
-    #items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
+#    #pid = party[0] gibt den Value zurück
+#    #adriansfkt.getPartynamen(pid) (für dich!, deine Select where Party ID == pid)
+#    #partyname = adriansfkt.getPartynamen(pid)
+#    #render_template("bearbeiten.html", partyname = partyname )
+#    party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
+#    print(party)
+#    items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
     
-    #print(submit)
+#    print(submit)
     
-    #return render_template("anzeigen.html", party=party, items = items)
+#    return render_template("anzeigen.html", party=party, items = items)
 
 
 @app.route('/friends', methods= ["GET", "POST"])
