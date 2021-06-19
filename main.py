@@ -77,6 +77,10 @@ def index():
 def help():
     return render_template('help.html')
 
+@app.route('/datenschutz')
+def datenschutz():
+    return render_template('datenschutz.html')
+
 @app.route("/registrate", methods=["GET","POST"])
 def registrate():
     form = Registrate()
