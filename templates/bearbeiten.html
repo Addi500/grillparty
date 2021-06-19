@@ -4,36 +4,50 @@
 <div class="container-1">
     <h1>{{ party[1] }}</h1>
     <h2>am {{ party[2] }} um {{ party[3] }}</h2>
-
     <form method="POST">
-        {{ form.hidden_tag() }}
+    <div id="edit" contenteditable="true">
+    
 
-        {{ form.title.label(class="form-label") }}
-        {{ form.title(class="form-control") }}
+    
+        <p>Titel</p>
+        <input type="text" value="{{ party[1] }}">
+        
         <br>
-        <div class="datetime">
-            <div class="date">
-                {{ form.date.label(class="form-label") }}
-                {{ form.date(class="form-control") }}
-                <br>
-            </div>
-            <div class="time">
-                {{ form.time.label(class="form-label") }}
-                {{ form.time(class="form-control") }}
-                <br>
-            </div>
-        </div>
-        {{ form.address.label(class="form-label") }}
-        {{ form.address(class="form-control") }}
+        <p>Datum</p>
+        <input type="date" value="{{ party[2] }}">
         <br>
-        {{ form.Teilnehmer.label(class="form-label") }}
-        {{ form.Teilnehmer(class="form-control") }}
+        <p>Uhrzeit</p>
+        <input type="time" value="{{ party[3] }}">
         <br>
-    </form>
+        <p>Ort</p>
+        <input type="text" value="{{ party[4] }}">
+        <br>
+        
+        {% for participant in participant %}
+        
+       
+            
+            <input class="form-check-input" type="checkbox" value="{{ friend[0] }}" id="defaultCheck1">
+            <label class="form-check-label" for="defaultCheck1">
+                {{ participant[1] }}
+            </label>
+           
+            <input type="hidden" name="info" value="{{ participant[0] }}" />
+            
+            </form>
+
+        
+        <span class="badge badge-primary">{{ participant[1] }}</span>
+        <hr>
+        <!--{ form.submit() }}-->
+        
+    {% endfor %}
+        
+   
 
 
         {% for item in items %}
-        <form>
+        
             <a href="#">
                 <h2>{{ item[0] }}</h2>
                 <h2>{{ item[1] }}</h2>
@@ -46,8 +60,12 @@
             <span class="badge badge-primary">{{ party[3] }}</span>
             <hr>
             <!--{ form.submit() }}-->
-        </form>
+        
         {% endfor %}
-</div>
+    </div>
+<input type="submit" class = "btn btn-light">
+<a href= '/dashboard' class = "btn btn-dark">Abbrechen</a>
+</form>
 
+</div>
 {% endblock %}

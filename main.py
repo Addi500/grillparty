@@ -174,19 +174,23 @@ def bearbeiten(pid):
     #adriansfkt.getPartynamen(pid) (für dich!, deine Select where Party ID == pid)
     #partyname = adriansfkt.getPartynamen(pid)
     #render_template("bearbeiten.html", partyname = partyname )
-    form=NewEvent()
+    #form=NewEvent()
     
     party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
-    print(party)
-    items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
-
-    if request.method == "POST" and form.validate_on_submit():
-        #save changes (db funktion tbd)
-        return redirect(url_for('bearbeiten'))
+    print('Party:',party)
     
-    print(pid)
+    items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
+    print('items:',items)
+    print('pid',pid)
+    #participant = select muss noch geschrieben werden
+    if request.method == "POST":
+        #save changes (db funktion tbd)
+        print("Submit funktioniert")
+        #return redirect(url_for('bearbeiten'))
+    
+    
     #return "Erfolg"
-    return render_template("bearbeiten.html", party=party, items = items,form=form)
+    return render_template("bearbeiten.html", party=party, items = items)
 
    # form = itemlist()
    # party_info = view_party(conn, cur, party_id)
