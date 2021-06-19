@@ -50,7 +50,7 @@ class NewEvent(FlaskForm):
     date = DateField(label="Datum", default = date.today())
     time = TimeField(label="Uhrzeit")
     address = TextAreaField(label="Ort")
-    Teilnehmer = SearchField (label="Teilnehmer tbd")
+    #Teilnehmer = SearchField (label="Teilnehmer tbd")
     submit = SubmitField("Erstellen")
 
 
@@ -123,7 +123,8 @@ def newevent():
     form = NewEvent()
    
     user = session["user"]
-
+    friends = select_friends(conn,cur, user)
+    print(friends)
 
     if form.validate_on_submit():
 
@@ -136,14 +137,15 @@ def newevent():
         session["itemlist"] = request.form.getlist('field[]')
         print("itemliste: ", session["itemlist"])
         
+
         print("if ")
         id = insert_into_parties(conn, cur, session["title"], session["date"], session["time"], session["address"],user)
         for item in session["itemlist"]:
             insert_into_itemlist(conn, cur, id, item) #change to list above
         for participant in session["Teilnehmer"]:
             insert_into_participants(conn, cur, id, participant) #change to list above
-        return render_template("registrate_success.html")
-    return render_template("newevent.html", form=form)
+        return render_template("dashboard.html")
+    return render_template("newevent.html", form=form, friends = friends)
 
 @app.route("/dashboard", methods=['POST', 'GET'])
 def dashboard():
@@ -151,7 +153,7 @@ def dashboard():
     user = session["user"]
     own_parties = select_parties(conn, cur, user, "own")
     foreign_parties = select_parties(conn, cur, user, "foreign")
-
+    print(own_parties)
 
     if request.method == "POST":
         
@@ -240,12 +242,12 @@ def addfriend():
     session._get_current_object.__name__  
     session["user_search"] = form.user.data
     suchergebnisse = search_user(conn, cur, session["user_search"])
+    print (suchergebnisse)
     
-    print(suchergebnisse)
     if form.validate_on_submit():
         session._get_current_object.__name__        
         session["user_search"] = form.user.data
-
+        
         suchergebnisse = search_user(conn, cur, session["user_search"])
         print (suchergebnisse)
         return render_template ('addfriend.html', form=form, suchergebnisse=suchergebnisse)

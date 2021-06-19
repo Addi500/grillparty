@@ -16,11 +16,15 @@
     </div>
 
     <div class = "Suchergebnisse">
+    
+    {% for suchergebnis in suchergebnisse %}
     <p>{{suchergebnisse[0]}}</p>
     <form action="/hinzufügen/" method="post">
-        <button name="Hinzufügen" type="submit" value="{{ suchergebnisse[0] }}" class="btn btn-light">Hinzufügen</button>
+        <button name="Hinzufügen" type="submit" value="Hallo" class="btn btn-light">Hinzufügen</button>
     </form>
 </div>
+    {% endfor %}
+
 
 </div>
-    {% endblock %}
+{% endblock %}

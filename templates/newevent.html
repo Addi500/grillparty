@@ -28,8 +28,29 @@
     {{ form.address.label(class="form-label") }}  
     {{ form.address(class="form-control") }}
     <br>
-    {{ form.Teilnehmer.label(class="form-label") }}  
-    {{ form.Teilnehmer(class="form-control") }}
+    <p>Teilnehmer</p>
+    
+    <form>
+    {% for friend in friends %}
+        
+            <div>
+                
+                <input class="form-check-input" type="checkbox" value="{{ friend[0] }}" id="defaultCheck1">
+                <label class="form-check-label" for="defaultCheck1">
+                    {{ friend[0] }}
+                </label>
+               
+                <input type="hidden" name="info" value="{{ friend[0] }}" />
+                
+                </form>
+
+            </div>
+            <span class="badge badge-primary">{{ friend[0] }}</span>
+            <hr>
+            <!--{ form.submit() }}-->
+        
+        {% endfor %}
+    </form>
     <br>
 
     <h3>Was dürfen Ihre Gäste mitbringen?</h3>
