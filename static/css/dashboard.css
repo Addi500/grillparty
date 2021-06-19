@@ -142,3 +142,7 @@ footer {
   height: 100px;
   width: 100%;
 }
+.Impressum {
+  display:flex;
+  align-items: center;
+}
