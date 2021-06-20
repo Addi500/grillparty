@@ -18,13 +18,13 @@
         
         <input type="hidden" name="info" value="{{ friend[1] }}" />
         <form action="/acceptinv/" method="post">
-            <button name="Acceptinvitation" type="submit" value="{{ friend[1] }}" class="btn btn-light">Annehmen</button>
+            <button name="Acceptinvitation" type="submit" value="{{ friend[0] }}" class="btn btn-light">Annehmen</button>
         </form>
         <form action="/declineinv/" method="post">
-            <button name="Declineinvitation" type="submit" value="{{ friend[1] }}" class="btn btn-dark">Ablehnen</button>
+            <button name="Declineinvitation" type="submit" value="{{ friend[0] }}" class="btn btn-dark">Ablehnen</button>
         </form>
     </p>
-    <span class="badge badge-primary">{{ friend[1] }}</span>
+    <span class="badge badge-primary">{{ friend[0] }}</span>
     <hr>
 </div>
     {% endfor %}
