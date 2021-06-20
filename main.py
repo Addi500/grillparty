@@ -46,10 +46,10 @@ class Login(FlaskForm):
 
 #Klasse zum Anlegen einer neuen Veranstaltung
 class NewEvent(FlaskForm):
-    title = StringField(label="Titel ")
+    title = StringField(label="Titel ",validators=[InputRequired()])
     date = DateField(label="Datum", default = date.today(), validators=[InputRequired()])
     time = TimeField(label="Uhrzeit", validators=[InputRequired()])
-    address = TextAreaField(label="Ort")
+    address = TextAreaField(label="Ort",validators=[InputRequired()])
     #Teilnehmer = SearchField (label="Teilnehmer tbd")
     submit = SubmitField("Erstellen")
 
@@ -77,6 +77,10 @@ def index():
 def help():
     return render_template('help.html')
 
+@app.route('/datenschutz')
+def datenschutz():
+    return render_template('datenschutz.html')
+
 @app.route("/registrate", methods=["GET","POST"])
 def registrate():
     form = Registrate()
@@ -95,7 +99,7 @@ def registrate():
 @app.route("/login", methods=["GET","POST"])
 def login():
     form = Login()
-    
+    session['logged_in']=False
             
     if form.validate_on_submit():
         session._get_current_object.__name__
@@ -371,7 +375,8 @@ def Logout():
     if request.method == 'POST':
         session['logged_in']=False
         session["address"] = None
-        print("Ich bin hier")
+        session ['user'] = None
+        print("Ich bin ausgeloggt")
         return render_template('start.html')
         
         
