@@ -123,7 +123,7 @@ def newevent():
     form = NewEvent()
    
     user = session["user"]
-    friends = select_friends(conn,cur, user)
+    friends = select_friends(conn, cur, user)
     print(friends)
 
     if form.validate_on_submit():
@@ -133,9 +133,11 @@ def newevent():
         session["date"] = form.date.data
         session["time"] = str(form.time.data)
         session["address"] = form.address.data
-        session["Teilnehmer"] = form.Teilnehmer.data
+        #session["Teilnehmer"] = form.Teilnehmer.data
         session["itemlist"] = request.form.getlist('field[]')
         print("itemliste: ", session["itemlist"])
+        teilnehmer = request.form.getlist("info") #ANSATZ; FUNKTIONIERT NOCH NICHT!!!
+        print (teilnehmer)
         
 
         print("if ")
@@ -223,19 +225,21 @@ def friends():
     user = session["user"]
     
     friend_requests_to_me = check_for_friend_requests(conn, cur, user, "foreign_requests")
-    friends = select_friends(conn, cur, user)
+    my_friends = select_friends(conn, cur, user)
+    len_friend_requests_to_me = len(friend_requests_to_me)
 
     if request.method == "POST":
         print("here i am")
         if "Acceptinvitation" in request.form:
-            print("accept friend")
             friend_request(conn, cur, user, request.form["Acceptinvitation"],"accept")
         elif "Declineinvitation" in request.form:
-            friend_request(conn, cur, user, request.form["Acceptinvitation"],"deny")
+            friend_request(conn, cur, user, request.form["Declineinvitation"],"deny")
+        elif "delete_friend" in request.form:
+            friend_request(conn, cur, user, request.form["delete_friend"],"delete")
         
         friends = select_friends(conn, cur, user)
        
-    return render_template('friends.html', friend_requests_to_me=friend_requests_to_me)
+    return render_template('friends.html', friend_requests_to_me=friend_requests_to_me, my_friends=my_friends, len_friend_requests_to_me=len_friend_requests_to_me)
 
 #@app.route(("/party/" + party_id))
 

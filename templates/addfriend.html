@@ -3,7 +3,7 @@
 {% block overview%}
 <title> Grillparty - Freunde</title>
 <div class="container-1">
-    
+
     <div class="Search">
         <h1> Freunde hinzufügen</h1>
 
@@ -12,17 +12,17 @@
             {{ form.user(class="form-control") }}
             <button class="btn btn-light" type="submit">Search</button>
         </form>
-    
+
     </div>
 
-    <div class = "Suchergebnisse">
-    
-    {% for suchergebnis in suchergebnisse %}
-    <p>{{suchergebnisse[0]}}</p>
-    <form action="/hinzufügen/" method="post">
-        <button name="Hinzufügen" type="submit" value="Hallo" class="btn btn-light">Hinzufügen</button>
-    </form>
-</div>
+    <div class="Suchergebnisse">
+
+        {% for suchergebnis in suchergebnisse %}
+        <p>{{suchergebnis[0]}}</p>
+        <form action="/hinzufügen/" method="post">
+            <button name="Hinzufügen" type="submit" value="Hallo" class="btn btn-light">Hinzufügen</button>
+        </form>
+    </div>
     {% endfor %}
 
 

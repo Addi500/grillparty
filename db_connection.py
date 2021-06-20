@@ -24,6 +24,8 @@ def initial_db(name=std_path):
 		#do more stuff
 		print("Datei bereits vorhanden")
 	else:
+		print("...creating new Database")
+
 		conn, cur = establish_connection(name)
 		initialization_script = """
 				CREATE TABLE users (
@@ -69,6 +71,7 @@ def initial_db(name=std_path):
 				CREATE TABLE friends (
 				friend1_mail TEXT NOT NULL,
 				friend2_mail TEXT NOT NULL,
+				PRIMARY KEY (friend1_mail, friend2_mail)
 				FOREIGN KEY (friend1_mail) REFERENCES users(mailaddress),
 				FOREIGN KEY (friend2_mail) REFERENCES users(mailaddress));
 		"""
@@ -123,31 +126,6 @@ def insert_into_friends(conn, cur, friend1, friend2):
 	write_to_db(conn, cur, script, parameters)
 
 ###Check- und Select-Funktionen
-
-def friend_request(conn, cur, requesting_user, requested_user, operation):
-	"""
-	Arg: operation
-	"request" : someone asks for a new friendship
-	"accept" : requested_user allows new friendship
-	"deny" : asked user denies
-	first initiator is always "requesting_user"
-	"""
-
-	if operation == "request":
-		insert_into_friends(conn, cur, requesting_user, requested_user)
-	elif operation == "accept":
-		insert_into_friends(conn, cur, requested_user, requesting_user)
-	elif operation == "deny":
-		script = """
-		DELETE FROM friends
-		WHERE friend1 = ? AND friend2 = ?;
-		"""
-		parameters = [requesting_user, requested_user]
-
-		cur.execute(script, parameters)
-		conn.commit()
-	else:
-		print("wrong operation")
 
 def check_for_friend_requests(conn, cur, user, operation):
 	"""
@@ -261,9 +239,10 @@ def select_friends(conn, cur, user):
 	return friends
 
 def search_user(conn, cur, begriff):
-	
+	results =[]
+
 	script = """
-	SELECT *
+	SELECT mailaddress, name
 	FROM users
 	WHERE name LIKE (?);
 	"""
@@ -271,6 +250,10 @@ def search_user(conn, cur, begriff):
 	parameters = [begriff]
 	cur.execute(script, parameters)
 	results = cur.fetchall()
+
+	if len(results) == 0:
+		print("in der if")
+		results = 0
 
 	return results
 
@@ -316,7 +299,7 @@ def select_itemlist(conn, cur, party):
 	script = """
 	SELECT party_id, item, brought_by, users.name
 	FROM itemlist
-	INNER JOIN users ON itemlist.brought_by = users.name
+	LEFT JOIN users ON users.mailaddress = itemlist.brought_by
 	WHERE party_id = ?;
 	"""
 	parameters = [party]
@@ -361,6 +344,119 @@ def change_itemlist(conn, cur, party, item, operation, user=None):
 	cur.execute(script, parameters)
 	results = cur.fetchall()
 	return results
+
+def friend_request(conn, cur, user1, user2, operation):
+	"""
+	Arg: operation
+	"request" : someone asks for a new friendship
+	"accept" : user2 allows new friendship
+	"deny" : asked user denies
+	"delete" : delete friendship on both sides
+	first initiator is always "user1"
+	"""
+
+	if operation == "request":
+		insert_into_friends(conn, cur, user1, user2)
+	elif operation == "accept":
+		insert_into_friends(conn, cur, user1, user2)
+	elif operation == "deny":
+		script = """
+		DELETE FROM friends
+		WHERE friend1_mail = ? AND friend2_mail = ?;
+		"""
+		parameters = [user2, user1]
+
+		cur.execute(script, parameters)
+		conn.commit()
+		print("commited", conn)
+	elif operation == "delete":
+		script = """
+		DELETE FROM friends
+		WHERE friend1_mail = ? AND friend2_mail = ?;
+		"""
+
+		parameters = [user1, user2]
+		cur.execute(script, parameters)
+		conn.commit()
+
+		script = """
+		DELETE FROM friends
+		WHERE friend1_mail = ? AND friend2_mail = ?;
+		"""
+		parameters = [user2, user1]
+		cur.execute(script, parameters)
+		conn.commit()
+
+	else:
+		print("wrong operation")
+
+def update_party(conn, cur, pid, value, operation):
+	"""
+	operations:
+	"title"
+	"date"
+	"time"
+	"address"
+	"""
+	if operation == "title":
+		script = """
+		UPDATE parties
+		SET title = ?
+		WHERE id = ?;
+		"""		
+	elif operation == "date":
+		script = """
+		UPDATE parties
+		SET date = ?
+		WHERE id = ?;
+		"""
+	elif operation == "time":
+		script = """
+		UPDATE parties
+		SET time = ?
+		WHERE id = ?;
+		"""
+	elif operation == "address":
+		script = """
+		UPDATE parties
+		SET address = ?
+		WHERE id = ?;
+		"""
+	else:
+		print("wrong operation")
+
+	parameters = [value, pid]
+	write_to_db(conn, cur, script, parameters)
+
+def change_participants(conn, cur, pid, user, operation):
+	"""
+	operations:
+	"new_participant"
+	"accept"
+	"delete"
+	"""
+	
+	if operation == "new_participant":
+		script = """
+		INSERT INTO participants
+		VALUES (?,?,0);
+		"""
+	elif operation == "accept":
+		script = """
+		UPDATE participants
+		SET accepted = 0
+		WHERE party_id = ? AND participant_mail = ?;
+		"""
+	elif operation == "delete":
+		script = """
+		DELETE FROM participants
+		WHERE party_id = ? AND participant_mail = ?;
+		"""
+	else:
+		print("wrong operation")
+
+	parameters = [pid, user]
+	write_to_db(conn, cur, script, parameters)
 
 ###util-funktionen
 

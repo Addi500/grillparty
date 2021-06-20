@@ -2,33 +2,56 @@
 
 {% block overview%}
 <div class=" container-1">
-<title> Grillparty - Freunde</title>
+    <title> Grillparty - Freunde</title>
 
-<div class = "button">
-    <a href="/addfriend" class="btn btn-secondary btn-lg w-100">Freunde hinzufügen</a>
-</div>
-<br>
-<h2>Neue Freundschaftsanfrage von:</h2>
-<br>
-<div class="FriendRequest">
-    {% for friend in friend_requests_to_me %}
-    <div class = "Friends">
-    <p>
-        <h2>{{ friend[0] }}</h2>
-        
-        <input type="hidden" name="info" value="{{ friend[1] }}" />
-        <form action="/acceptinv/" method="post">
-            <button name="Acceptinvitation" type="submit" value="{{ friend[1] }}" class="btn btn-light">Annehmen</button>
-        </form>
-        <form action="/declineinv/" method="post">
-            <button name="Declineinvitation" type="submit" value="{{ friend[1] }}" class="btn btn-dark">Ablehnen</button>
-        </form>
-    </p>
-    <span class="badge badge-primary">{{ friend[1] }}</span>
-    <hr>
-</div>
-    {% endfor %}
-</div>
+    <div class="button">
+        <a href="/addfriend" class="btn btn-secondary btn-lg w-100">Freunde hinzufügen</a>
+    </div>
+
+    {% if len_friend_requests_to_me != 0 %}
+    <br>
+    <h2>Neue Freundschaftsanfragen von:</h2>
+    <br>
+    <div class="FriendRequest">
+        {% for friend in friend_requests_to_me %}
+        <div class="Friends">
+            <p>
+                <h4>{{ friend[0] }}</h4>
+
+                <input type="hidden" name="info" value="{{ friend[1] }}" />
+                <form method="post">
+                    <button name="Acceptinvitation" type="submit" value="{{ friend[1] }}" class="btn btn-light">Annehmen</button>
+                </form>
+                <form method="post">
+                    <button name="Declineinvitation" type="submit" value="{{ friend[1] }}" class="btn btn-dark">Ablehnen</button>
+                </form>
+            </p>
+            <span class="badge badge-primary">{{ friend[1] }}</span>
+            <hr>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <br>
+    <h2>Meine Freunde:</h2>
+    <br>
+    <div class="FriendRequest">
+        {% for friend in my_friends %}
+        <div class="Friends">
+            <p>
+                <h4>{{ friend[0] }}</h4>
+
+                <input type="hidden" name="info" value="{{ friend[1] }}" />
+                <form method="post">
+                    <button name="delete_friend" type="submit" value="{{ friend[1] }}" class="btn btn-light">Löschen</button>
+                </form>
+            </p>
+            <span class="badge badge-primary">{{ friend[1] }}</span>
+            <hr>
+        </div>
+        {% endfor %}
+    </div>
 
 
 </div>
