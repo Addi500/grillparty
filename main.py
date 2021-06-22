@@ -6,7 +6,7 @@ from sqlite3.dbapi2 import Time
 from flask import Flask, render_template, request, redirect, flash
 from flask.globals import session
 from flask.helpers import url_for
-from flask_wtf import FlaskForm, CsrfProtect
+from flask_wtf import FlaskForm
 from werkzeug.wrappers import AcceptMixin
 from wtforms import widgets
 from wtforms.fields import StringField, PasswordField, SubmitField, TextAreaField
@@ -14,16 +14,14 @@ from wtforms.fields.core import RadioField, SelectMultipleField
 from wtforms.fields.html5 import DateField, SearchField
 from wtforms.validators import Email, InputRequired, data_required, email, equal_to, length
 from db_connection import *
-from wtforms_components import TimeField, DateRange
+from wtforms_components import TimeField
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 
 app = Flask(__name__, template_folder='templates')
-#csrf = CsrfProtect()
 app.config['SECRET_KEY'] = 'secretKeyForCookieGeneration'
-#csrf.init_app(app)
 
-db_name = "dbrun5.db"
+db_name = "dbrun4.db"
 initial_db(db_name)
 conn, cur = establish_connection(db_name)
 
@@ -48,12 +46,13 @@ class Login(FlaskForm):
 
 #Klasse zum Anlegen einer neuen Veranstaltung
 class NewEvent(FlaskForm):
-    title = StringField(label="Titel", validators=[InputRequired()])
-    date = DateField(label="Datum", validators=[DateRange(min=date.today())], default = date.today())
-    time = TimeField(label="Uhrzeit", validators=[InputRequired()])
-    address = TextAreaField(label="Ort", validators=[InputRequired()])
+    title = StringField(label="Titel ")
+    date = DateField(label="Datum", default = date.today())
+    time = TimeField(label="Uhrzeit")
+    address = TextAreaField(label="Ort")
     #Teilnehmer = SearchField (label="Teilnehmer tbd")
     submit = SubmitField("Erstellen")
+
 
 class AddFriend(FlaskForm):
     user = SearchField()
@@ -138,17 +137,20 @@ def newevent():
         session["date"] = form.date.data
         session["time"] = str(form.time.data)
         session["address"] = form.address.data
-        session["Teilnehmer"] = request.form.getlist("checkbox")
+        #session["Teilnehmer"] = form.Teilnehmer.data
         session["itemlist"] = request.form.getlist('field[]')
-        #print("itemliste: ", session["itemlist"])        
-               
+        print("itemliste: ", session["itemlist"])
+        teilnehmer = request.form.getlist("info") #ANSATZ; FUNKTIONIERT NOCH NICHT!!!
+        print (teilnehmer)
+        
+
+        print("if ")
         id = insert_into_parties(conn, cur, session["title"], session["date"], session["time"], session["address"],user)
         for item in session["itemlist"]:
             insert_into_itemlist(conn, cur, id, item) #change to list above
         for participant in session["Teilnehmer"]:
-            print(participant)
             insert_into_participants(conn, cur, id, participant) #change to list above
-        return redirect(url_for("dashboard"))
+        return render_template("dashboard.html")
     return render_template("newevent.html", form=form, friends = friends)
 
 @app.route("/dashboard", methods=['POST', 'GET'])
@@ -180,19 +182,21 @@ def bearbeiten(pid):
     #render_template("bearbeiten.html", partyname = partyname )
     #form=NewEvent()
     
-    party = view_party(conn, cur, pid) #Tupel mit den Party Attributen    
-    items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by      
-    participants = select_participants(conn, cur, pid, "all")
-    guests = select_guests(conn, cur, pid) #participants mit items
+    party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
+    print('Party:',party)
+    
+    items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
+    print('items:',items)
+    print('pid',pid)
+    #participant = select muss noch geschrieben werden
     if request.method == "POST":
-        changed_title = request.form["titel"]
-        update_party(conn, cur, pid, changed_title, "title")
+        #save changes (db funktion tbd)
         print("Submit funktioniert")
         #return redirect(url_for('bearbeiten'))
     
     
     #return "Erfolg"
-    return render_template("bearbeiten.html", party=party, items = items, participants=participants, guests = guests)
+    return render_template("bearbeiten.html", party=party, items = items)
 
    # form = itemlist()
    # party_info = view_party(conn, cur, party_id)
@@ -327,17 +331,28 @@ def invitations():
 @app.route("/accept/<pid>", methods=['POST', 'GET'])
 def accept(pid):
     session._get_current_object.__name__
-    user = session["user"]
+    
+    script_accept = """
+    UPDATE participants
+    SET accepted = 1
+    WHERE party_id = ? AND participant_mail = ?;
+    """
+    print("accepted1")
+    print(pid, session["user"])
+    cur.execute(script_accept, [pid, session["user"]])
+    conn.commit()   
+    print(pid)
 
-    change_participants(conn, cur, pid, user, "accept")
     
     party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
+    print(party)
     items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
     
-    if request.method == "POST":
-        for item in request.form.getlist("checkbox"):
-             change_itemlist(conn, cur, pid, item, "assign_to", user)
-        
+    print(items)
+    
+    #ändern: change_itemlist()
+    
+    #return 'Erfolg'
     return render_template('anzeigen.html', items = items, party = party)
 
 @app.route("/decline/", methods=['POST'])

@@ -1,31 +1,35 @@
 {% extends "dashboard.html" %}
 {% block overview%}
 
-
 <div class="container-1">
-    <div class="Partyinfo">
-        <h2>{{ party[1] }}</h2><br>
-        <h2>am {{ party[2] }} um {{ party[3] }}</h2>
-        <h3> Ort: {{ party[4]}} </h3>
-        <p>Sie wurden eingeladen von: {{party[6]}}</p>
-
+    <div class = "Partyinfo">
+    <h2>{{ party[1] }}</h2><br>
+    <h2>am {{ party[2] }} um {{ party[3] }}</h2>
+    <h3> Ort: {{ party[4]}} </h3>
+    <p>Sie wurden eingeladen von: {{party[5]}}</p>
+    
     </div>
-    <p>Bitte wählen Sie aus folgender Liste die Elemente aus, die Sie mitbringen möchten:</p>
+<p>Bitte wählen Sie aus folgender Liste die Elemente aus, die Sie mitbringen möchten:</p>
 
-    <form method="post">
-        {% for item in items %}
-        <div>
-            <input class="form-check-input" name="checkbox" type="checkbox" value="{{ item[1] }}" id="defaultCheck1">
-            <label class="form-check-label" for="defaultCheck1">
-                {{ item[1] }}
-            </label>
+{% for item in items %}
+        <form>
+            <a href="#">
+                <h2>{{ item[0] }}</h2>
+                <h2>{{ item[1] }}</h2>
+                <input type="hidden" name="info" value="{{ item[0] }}" />
+                
+                </form>
 
-            <input type="hidden" name="info" value="{{ item[1] }}" />
-        </div>
+            </a>
+            <span class="badge badge-primary">{{ party[3] }}</span>
+            <hr>
+            <!--{ form.submit() }}-->
+        </form>
         {% endfor %}
-        <br />
-        <input type="submit" name="submit" class="btn btn-light"/>
-    </form>
+
+
+
+
 </div>
 
 
