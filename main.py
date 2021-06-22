@@ -1,9 +1,9 @@
 
-from datetime import date
+from datetime import date, datetime
 from re import UNICODE
 import sqlite3
 from sqlite3.dbapi2 import Time
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 from flask.globals import session
 from flask.helpers import url_for
 from flask_wtf import FlaskForm
@@ -46,10 +46,10 @@ class Login(FlaskForm):
 
 #Klasse zum Anlegen einer neuen Veranstaltung
 class NewEvent(FlaskForm):
-    title = StringField(label="Titel ",validators=[InputRequired()])
-    date = DateField(label="Datum", default = date.today(), validators=[InputRequired()])
-    time = TimeField(label="Uhrzeit", validators=[InputRequired()])
-    address = TextAreaField(label="Ort",validators=[InputRequired()])
+    title = StringField(label="Titel ")
+    date = DateField(label="Datum", default = date.today())
+    time = TimeField(label="Uhrzeit")
+    address = TextAreaField(label="Ort")
     #Teilnehmer = SearchField (label="Teilnehmer tbd")
     submit = SubmitField("Erstellen")
 
@@ -233,7 +233,6 @@ def friends():
     len_friend_requests_to_me = len(friend_requests_to_me)
 
     if request.method == "POST":
-        print("here i am")
         if "Acceptinvitation" in request.form:
             friend_request(conn, cur, user, request.form["Acceptinvitation"],"accept")
         elif "Declineinvitation" in request.form:
@@ -251,19 +250,23 @@ def friends():
 @app.route('/addfriend', methods = ["GET", "POST"])
 def addfriend():
     form = AddFriend()
-    session._get_current_object.__name__  
-    session["user_search"] = form.user.data
-    suchergebnisse = search_user(conn, cur, session["user_search"])
-    print (suchergebnisse)
-    
+    session._get_current_object.__name__
+    user = session["user"]
+
     if form.validate_on_submit():
         session._get_current_object.__name__        
         session["user_search"] = form.user.data
         
-        suchergebnisse = search_user(conn, cur, session["user_search"])
+        suchergebnisse = search_user(conn, cur, session["user_search"], user)
         print (suchergebnisse)
         return render_template ('addfriend.html', form=form, suchergebnisse=suchergebnisse)
-    return render_template('addfriend.html', form=form, sucherergebnisse = suchergebnisse)
+    if "Hinzufügen" in request.form:
+        friend_request(conn, cur, user, request.form["Hinzufügen"], "request")
+        flash('Freund hinzugefügt')
+        print("flashing")
+        return redirect(url_for('addfriend'))
+        
+    return render_template('addfriend.html', form=form)
     
 #übergibt gesuchten User. Funktion für Buttons fehlt noch
 @app.route("/hinzufügen/", methods=['POST'])
@@ -366,7 +369,6 @@ def Decline():
 
     forward_message = "Moving Forward..."
     return render_template('dashboard.html', forward_message=forward_message)
-
 
 @app.route("/logout/", methods=['POST'])
 def Logout():

@@ -6,52 +6,55 @@
 
 <div class="container-1">
     <h1> Veranstaltungseinladungen</h1>
-    
+    {% if invites == 0%}
+    <p>Es sind aktuell keine Veranstaltungseinladungen vorhanden.</p>
+    <p>Legen Sie doch unter <a href="/newevent">Veranstaltung erstellen</a> selber eine Party an und laden Sie Ihre Freunde ein!</p>
+    {%else%}
 
-        {% for invite in invites %}
-        <p>
-            <h2>{{ invite[1] }}</h2>
-        <table class = "table">
+    {% for invite in invites %}
+    <p>
+        <h2>{{ invite[1] }}</h2>
+        <table class="table">
             <thead>
-            <tr>
-                <th scope="col">Datum</th>
-                <th scope="col">Uhrzeit</th>
-                <th scope="col">Ort</th>
-                <th scope="col">Veranstalter</th>
-                
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-              <td>{{ invite[2] }}</td>
-              <td>{{ invite[4] }}</td>
-              <td>{{ invite[3] }}</td>
-              <td>{{ invite[5] }}</td>
-              
-              
-            </tr>
-          </tbody>
+                <tr>
+                    <th scope="col">Datum</th>
+                    <th scope="col">Uhrzeit</th>
+                    <th scope="col">Ort</th>
+                    <th scope="col">Gastgeber</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ invite[2] }}</td>
+                    <td>{{ invite[4] }}</td>
+                    <td>{{ invite[3] }}</td>
+                    <td>{{ invite[6] }}</td>
+
+
+                </tr>
+            </tbody>
         </table>
-            
-            
-            <div class="buttons">
-                <input type="hidden" name="info" value="{{ invite[0] }}" />
-                <form  method="post">
-                    <button name="Submit" type="submit" value="{{ invite[0] }}" class="btn btn-light">Annehmen</button>
-                </form>
-                <form action="/decline/" method="post">
-                    <button name="Decline" type="submit" value="{{ invite[0] }}" class="btn btn-dark">Ablehnen</button>
-                </form>
-
-            </div>
-        </p>
-        <span class="badge badge-primary">{{ invite[3] }}</span>
-        <hr>
 
 
+        <div class="buttons">
+            <input type="hidden" name="info" value="{{ invite[0] }}" />
+            <form method="post">
+                <button name="Submit" type="submit" value="{{ invite[0] }}" class="btn btn-light">Annehmen</button>
+            </form>
+            <form action="/decline/" method="post">
+                <button name="Decline" type="submit" value="{{ invite[0] }}" class="btn btn-dark">Ablehnen</button>
+            </form>
 
-        {% endfor %}
-    
+        </div>
+    </p>
+    <span class="badge badge-primary">{{ invite[3] }}</span>
+    <hr>
+
+
+
+    {% endfor %}
+    {% endif %}
 </div>
 
 {% endblock %}
