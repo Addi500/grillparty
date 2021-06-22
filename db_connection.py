@@ -300,7 +300,8 @@ def check_for_friend_requests(conn, cur, user, operation):
 		AND NOT friend1_mail IN
 			(SELECT friend2_mail
 			FROM friends
-			WHERE friend1_mail = ?);
+			WHERE friend1_mail = ?)
+			GROUP BY friend1_mail;
 		"""
 		parameters = [user, user]
 		cur.execute(script, parameters)
@@ -541,7 +542,6 @@ def select_guests_items(conn, cur, pid):
 	results = cur.fetchall()
 	
 	return results
-
 
 ###UPDATE-Funktionen
 

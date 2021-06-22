@@ -174,14 +174,20 @@ def friends():
     friend_requests_to_me = check_for_friend_requests(conn, cur, user, "foreign_requests")
     my_friends = select_friends(conn, cur, user)
     len_friend_requests_to_me = len(friend_requests_to_me)
+    print("anfragen:", friend_requests_to_me)
 
     if request.method == "POST":
         if "Acceptinvitation" in request.form:
             friend_request(conn, cur, user, request.form["Acceptinvitation"],"accept")
+            flash("Freund hinzugefügt")
         elif "Declineinvitation" in request.form:
             friend_request(conn, cur, user, request.form["Declineinvitation"],"deny")
+            flash("Freundschaftsanfrage abgelehnt")
         elif "delete_friend" in request.form:
             friend_request(conn, cur, user, request.form["delete_friend"],"delete")
+            flash("Freundschaft gelöscht")
+        
+        return redirect(url_for("friends"))
         
         friends = select_friends(conn, cur, user)
        

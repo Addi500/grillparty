@@ -2,6 +2,17 @@
 
 {% block overview%}
 <div class=" container-1">
+    <!-- Flashes -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert-info">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
     <title> Grillparty - Freunde</title>
 
     <div class="button">
@@ -41,19 +52,19 @@
         <div class="Friends">
             <p>
                 <div class="d-flex p-2">
-                <h4>{{ friend[0] }}</h4>
+                    <h4>{{ friend[0] }}</h4>
 
-                <input type="hidden" name="info" value="{{ friend[1] }}" />
-                <form method="post">
-                    <button name="delete_friend" type="submit" value="{{ friend[1] }}" class="btn btn-light">Löschen</button>
-                </form>
+                    <input type="hidden" name="info" value="{{ friend[1] }}" />
+                    <form method="post">
+                        <button name="delete_friend" type="submit" value="{{ friend[1] }}" class="btn btn-light">Löschen</button>
+                    </form>
             </p>
             <span class="badge badge-primary">{{ friend[1] }}</span>
             <hr>
         </div>
-        </div>
-        {% endfor %}
     </div>
+    {% endfor %}
+</div>
 
 
 </div>
