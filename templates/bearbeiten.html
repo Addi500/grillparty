@@ -11,7 +11,7 @@
     <form method="POST">
         <div id="edit">
 
-            <h5><u>Gaeste</u></h5>
+            <h5><u>Teilnehmer</u></h5>
             {% for guest in guests %}
 
             <div class="FriendRequest">
@@ -27,7 +27,7 @@
             {% endfor %}
             {% if unbound_items != 0 %}
 
-            <h4>Uebrige Items, die noch verteilt werden muessen:</h4>
+            <h4>Items, die noch nicht zugeteilt sind:</h4>
 
             {% for unbound_item in unbound_items %}
             <li>{{unbound_item[1]}}</li>
@@ -39,7 +39,7 @@
 
         </div>
         <br />
-        <a href='/dashboard' class="btn btn-light">Zurueck zur Uebersicht</a>
+        <a href='/dashboard' class="btn btn-light">Zum Dashboard</a>
     </form>
 
     <!--{ form.submit() }}-->
