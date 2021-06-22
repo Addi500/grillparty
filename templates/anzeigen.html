@@ -22,6 +22,7 @@
 <p>Bitte wählen Sie aus folgender Liste die Elemente aus, die Sie mitbringen möchten:</p>
 
 <form method="post">
+{% if items != 0 %}
 {% for item in items %}
 <div class="form-check form-check-inline">
 
@@ -35,11 +36,13 @@
 
 {% endfor %}
 
-
-
 <br>
 
 <input type="submit" name="cmdsubmit" class="btn btn-light">
+   {% else %}
+    <p><i>Es sind keine Items mehr da, die noch mitgebracht werden müssen.</i></p>
+    {% endif %}
+
 </form>
 </div>
 {% endblock %}

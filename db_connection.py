@@ -680,7 +680,7 @@ def change_participants(conn, cur, pid, user, operation):
 	elif operation == "accept":
 		script = """
 		UPDATE participants
-		SET accepted = 0
+		SET accepted = 1
 		WHERE party_id = ? AND participant_mail = ?;
 		"""
 	elif operation == "delete":

@@ -310,16 +310,14 @@ def invitations():
     print(invites)
     if request.method == "POST":
         
-        Submit = request.form.get("Submit")
-        
-        print(Submit)
-        forward_message = "Moving Forward..."
-        #party_info = view_party(conn, cur, party_id)
-        #return render_template('bearbeiten.html', forward_message=forward_message,own_parties=own_parties, Submit=Submit)
-        return redirect(url_for('accept', pid=Submit))
+        if "Accept" in request.form:
+            change_participants(conn, cur, request.form["Accept"], user, "accept")
+            pid = request.form["Accept"]
+        elif "Decline" in request.form:
+            change_participants(conn, cur, request.form["Decline"], user, "delete")
+            pid = request.form["Decline"]
 
-    # Abgleich mit db nicht über if sondern anhand Buttonvalue akzeptieren (von 0 auf 1 setzen)
-    #Moving forward code
+        return redirect(url_for('accept', pid=pid))
 
     return render_template('invitations.html', invites = invites)
 
@@ -331,7 +329,7 @@ def accept(pid):
     change_participants(conn, cur, pid, user, "accept")
     
     party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
-    items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
+    items = select_itemlist(conn, cur, pid, "unbound") #Liste aller Items als Tupel bestehend aus item und brought_by
     
     if request.method == "POST":
         flash('Itemliste aktualisiert')

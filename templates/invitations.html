@@ -27,8 +27,8 @@
             <tbody>
                 <tr>
                     <td>{{ invite[2] }}</td>
-                    <td>{{ invite[4] }}</td>
                     <td>{{ invite[3] }}</td>
+                    <td>{{ invite[4] }}</td>
                     <td>{{ invite[6] }}</td>
 
 
@@ -40,18 +40,12 @@
         <div class="buttons">
             <input type="hidden" name="info" value="{{ invite[0] }}" />
             <form method="post">
-                <button name="Submit" type="submit" value="{{ invite[0] }}" class="btn btn-light">Annehmen</button>
-            </form>
-            <form action="/decline/" method="post">
+                <button name="Accept" type="submit" value="{{ invite[0] }}" class="btn btn-light">Annehmen</button>            
                 <button name="Decline" type="submit" value="{{ invite[0] }}" class="btn btn-dark">Ablehnen</button>
             </form>
 
         </div>
     </p>
-    <span class="badge badge-primary">{{ invite[3] }}</span>
-    <hr>
-
-
 
     {% endfor %}
     {% endif %}
