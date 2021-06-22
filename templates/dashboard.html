@@ -4,6 +4,7 @@
 
 {% if session['logged_in'] %}
 
+
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="/dashboard">Grillparty</a>
@@ -25,12 +26,23 @@
     <a href="/newevent">Veranstaltung erstellen</a>
     <a href="/invitations">Einladungen</a>
     <a href="/friends">Freunde</a>
-</div>
+    
+  
 
-  {% block overview %}
+</div>
+{% block overview %}
 <title> Grillparty - Dashboard</title>
 <!-- Page content -->
 <div class="main">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert-info">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+   {% endif %}
+    {% endwith %}
 
     <h1> Eigene Veranstaltungen</h1>
     {% if own_parties == 0%}
@@ -38,9 +50,9 @@
     <p>Probieren Sie es doch unter <a href="/newevent">Veranstaltung erstellen</a> einmal aus!</p>
     {%else%}
     {% for party in own_parties %}
-    <p>
 
         <h3>{{ party[1] }}</h3>
+        
         <table class="table">
             <thead>
                 <tr>
@@ -55,20 +67,15 @@
                     <td>{{ party[2] }}</td>
                     <td>{{ party[3] }}</td>
                     <td>{{ party[4] }}</td>
-
-
+                    <td class="align-middle" >
+                        <form method="post">
+                            <button name="submit" class="btn btn-light" type="submit" value="{{ party[0] }}">Bearbeiten</button>
+                        </form>
                 </tr>
             </tbody>
-        </table>
-
-        <input type="hidden" name="info" value="{{ party[0] }}" />
-        <form method="post">
-            <button name="submit" class="btn btn-light" type="submit" value="{{ party[0] }}">Bearbeiten</button>
+        </table>   
 
         </form>
-
-    </p>
-    <span class="badge badge-primary">{{ party[1] }}</span>
 
     {% endfor %}
     {% endif %}

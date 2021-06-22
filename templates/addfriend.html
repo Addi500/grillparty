@@ -24,22 +24,30 @@
         </form>
 
     </div>
+    
     {% if suchergebnisse == 0 %}
     <p>Es gab keine Treffer für Ihre Suche. Probieren Sie es noch einmal mit einem anderen Suchbegriff.</p>
     {% else %}
-
+    <div class = "Searchresults">
     {% for suchergebnis in suchergebnisse %}
-    <div class="Friend">
-        <h4>{{suchergebnis[1]}}</h4>
+    <div class="d-flex justify-content-between">
+        <div class="d-flex">
+        <h4>{{suchergebnis[1]}}</h4></div>
         <!--<h6>{{suchergebnis[0]}}</h6>-->
-        <input type="hidden" name="info" value="{{ suchergebnis[0] }}" />
+        
+        <div class="d-flex">
+            <input type="hidden" name="info" value="{{ suchergebnis[0] }}" />
         <form method="post">
-            <button name="Hinzufügen" type="submit" value="{{ suchergebnis[0] }}" class="Friend button">Hinzufügen</button>
+            <button name="Hinzufügen" type="submit" value="{{ suchergebnis[0] }}" class="btn btn-light">Hinzufügen</button>
         </form>
+        </div>
+        </div>
 
-    </div>
-    <br />
+        <hr>
+    <br>
+
     {% endfor %}
+</div>
     {% endif %}
 
 
