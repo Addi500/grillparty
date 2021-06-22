@@ -17,7 +17,11 @@ def write_to_db(connection, cursor, sql_script, parameters=[]):
 	try:
 		cursor.execute(sql_script, parameters)
 		connection.commit()
+<<<<<<< HEAD
 		return cursor.fetchall()
+=======
+		return cursor.lastrowid
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 	except:
 		### ERROR HANDLING
 		print("SQLError")
@@ -35,7 +39,11 @@ def initial_db(name=std_path):
 				CREATE TABLE users (
 				mailaddress TEXT NOT NULL PRIMARY KEY,
 				name TEXT NOT NULL,
+<<<<<<< HEAD
 				password TEXT NOT NULL
+=======
+				password TEXT NOT NULL,
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 				last_edited TEXT);
 				"""
 		write_to_db(conn, cur, initialization_script)
@@ -165,7 +173,11 @@ def initial_db(name=std_path):
 		BEGIN
 			UPDATE parties
 			   SET last_edited = datetime('now') 
+<<<<<<< HEAD
 			 WHERE party_id = NEW.party_id;
+=======
+			 WHERE id = NEW.id;
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 		END;
 
 		CREATE TRIGGER last_edited_trigger_parties_updated
@@ -179,7 +191,11 @@ def initial_db(name=std_path):
 		BEGIN
 			UPDATE parties
 			   SET last_edited = datetime('now') 
+<<<<<<< HEAD
 			 WHERE party_id = NEW.party_id;
+=======
+			 WHERE id = NEW.id;
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 		END;
 
 
@@ -205,7 +221,11 @@ def initial_db(name=std_path):
 		END;
 
 		"""
+<<<<<<< HEAD
 		write_to_db(conn, cur, trigger_script)
+=======
+		cur.executescript(trigger_script)
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 
 		print("created new Database ", name)
 		#bonus: encrypt passwords. http://blog.dornea.nu/2011/07/28/howto-keep-your-passwords-safe-using-sqlite-and-sqlcipher/
@@ -224,23 +244,39 @@ def insert_into_users(conn, cur, mailaddress, name, password):
 
 def insert_into_parties(conn, cur, title, date, time, address, owner):
 	script = """
+<<<<<<< HEAD
 	INSERT INTO parties (title, date, time, address, owner) VALUES (?,?,?,?,?)
 	RETURNING id;
+=======
+	INSERT INTO parties (id, title, date, time, address, owner) VALUES (NULL,?,?,?,?,?);
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 	"""
 	parameters = [title, date, time, address, owner]
 	id = write_to_db(conn, cur, script, parameters)
 	
+<<<<<<< HEAD
 	script = """
 	INSERT INTO users (party_id, partcipant_mail, accepted) VALUES (?,?,?);
 	"""
 	parameters = [party_id, owner, 1]
 	write_to_db(conn, cur, script, parameters)
+=======
+	#script = """
+	#INSERT INTO participants (party_id, participant_mail, accepted) VALUES (?,?,?);
+	#"""
+	#parameters = [party_id, owner, 1]
+	#write_to_db(conn, cur, script, parameters)
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 
 	return id
 
 def insert_into_participants(conn, cur, party_id, participant_mail):
 	script = """
+<<<<<<< HEAD
 	INSERT INTO users (party_id, partcipant_mail, accepted) VALUES (?,?,?);
+=======
+	INSERT INTO participants (party_id, participant_mail, accepted) VALUES (?,?,?);
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 	"""
 	parameters = [party_id, participant_mail, 0]
 	write_to_db(conn, cur, script, parameters)
@@ -250,14 +286,22 @@ def insert_into_itemlist(conn, cur, party_id, item):
 	#wie werden die Items übergeben? hier schon for-schleife oder beim aufruf jeweils?
 
 	script = """
+<<<<<<< HEAD
 	INSERT INTO users (party_id, item, brought_by) VALUES (?,?,?);
+=======
+	INSERT INTO itemlist (party_id, item, brought_by) VALUES (?,?,?);
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 	"""
 	parameters = [party_id, item, None]
 	write_to_db(conn, cur, script, parameters)
 
 def insert_into_friends(conn, cur, friend1, friend2):
 	script = """
+<<<<<<< HEAD
 	INSERT INTO users (friend1_mail, friend2_mail) VALUES (?,?);
+=======
+	INSERT INTO friends (friend1_mail, friend2_mail) VALUES (?,?);
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 	"""
 	parameters = [friend1, friend2]
 	write_to_db(conn, cur, script, parameters)
@@ -402,7 +446,6 @@ def search_user(conn, cur, begriff, searching_user):
 	results = cur.fetchall()
 
 	if len(results) == 0:
-		print("in der if")
 		results = 0
 
 	return results
@@ -473,9 +516,66 @@ def select_itemlist(conn, cur, party):
 		results[i]=list(results[i])
 		if results[i][2] == None:
 			results[i][2] = 0
+<<<<<<< HEAD
 			print("in der if")
 	print(results)
+=======
+			print(results)
 	return results
+
+def select_participants(conn, cur, pid, type):
+	"""
+	type options:
+	"all"
+	"accepted"
+	"open"
+	"""
+	if type == "all":
+		script = """
+		SELECT participants.party_id, participants.participant_mail, participants.accepted, users.name
+		FROM participants
+		INNER JOIN users ON users.mailaddress = participants.participant_mail
+		WHERE party_id = ?;
+		"""
+	elif type == "accepted":
+		script = """
+		SELECT participants.party_id, participants.participant_mail, participants.accepted, users.name
+		FROM participants
+		INNER JOIN users ON users.mailaddress = participants.participant_mail
+		WHERE party_id = ? AND accepted = 1;
+		"""
+	elif type == "open":
+		script = """
+		SELECT participants.party_id, participants.participant_mail, participants.accepted, users.name
+		FROM participants
+		INNER JOIN users ON users.mailaddress = participants.participant_mail
+		WHERE party_id = ? AND accepted = 0;
+		"""
+	else:
+		print("wrong type")
+		raise
+
+	parameters = [pid]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
+	return results
+
+def select_guests(conn, cur, pid):
+	script = """
+	SELECT participants.party_id, participants.participant_mail, participants.accepted, users.name, itemlist.item, itemlist.brought_by
+	FROM participants
+	INNER JOIN users ON users.mailaddress = participants.participant_mail
+	LEFT JOIN itemlist ON itemlist.brought_by = participants.participant_mail
+	WHERE participants.party_id = ?
+	"""
+	parameters = [pid]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+	for i in range(len(results)):
+		pass
+	return results
+
 
 ###UPDATE-Funktionen
 
@@ -493,6 +593,7 @@ def change_itemlist(conn, cur, party, item, operation, user=None):
 		WHERE party_id = ? AND item = ?
 		"""
 		parameters = [party, item]
+
 	elif operation == "assign_to":
 		script = """
 		UPDATE itemlist
@@ -503,6 +604,7 @@ def change_itemlist(conn, cur, party, item, operation, user=None):
 			print("user must not be NULL")
 			raise ValueError()
 		parameters = [user, party, item]
+
 	elif operation == "unassign_to":
 		script = """
 		UPDATE itemlist
@@ -511,9 +613,7 @@ def change_itemlist(conn, cur, party, item, operation, user=None):
 		"""
 		parameters = [party, item]
 
-	cur.execute(script, parameters)
-	results = cur.fetchall()
-	return results
+	write_to_db(conn, cur, script, parameters)
 
 def friend_request(conn, cur, user1, user2, operation):
 	"""
@@ -665,4 +765,8 @@ def readable_date_time(input, type):
 		datetimeobject = datetime.strptime(input, '%H:%M:%S')
 		return datetimeobject.strftime("%H:%M")
 	else:
+<<<<<<< HEAD
 		print("wrong type")	
+=======
+		print("wrong type")
+>>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
