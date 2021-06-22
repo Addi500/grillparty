@@ -1,6 +1,7 @@
 import sqlite3 as sql
 import os
 from datetime import date, datetime
+import hashlib
 
 std_path = "database.db"
 
@@ -9,13 +10,14 @@ std_path = "database.db"
 def establish_connection(sql_filepath=std_path):
 	connection = sql.connect(sql_filepath, check_same_thread=False)
 	cursor = connection.cursor()
+	print("established Connection to Database ", sql_filepath)
 	return connection, cursor
 
 def write_to_db(connection, cursor, sql_script, parameters=[]):
 	try:
 		cursor.execute(sql_script, parameters)
 		connection.commit()
-		return connection.fetchall()
+		return cursor.fetchall()
 	except:
 		### ERROR HANDLING
 		print("SQLError")
@@ -95,15 +97,20 @@ def initial_db(name=std_path):
 			 WHERE friend1_mail = NEW.friend1_mail AND 
 				   friend2_mail = NEW.friend2_mail;
 		END;
+
 		CREATE TRIGGER last_edited_trigger_friends_updated
-				 AFTER UPDATE
-					ON friends
+         AFTER UPDATE OF friend1_mail,
+                         friend2_mail
+            ON friends
 		BEGIN
 			UPDATE friends
 			   SET last_edited = datetime('now') 
 			 WHERE friend1_mail = NEW.friend1_mail AND 
 				   friend2_mail = NEW.friend2_mail;
 		END;
+
+
+
 		CREATE TRIGGER last_edited_trigger_itemlist
 				 AFTER INSERT
 					ON itemlist
@@ -113,8 +120,11 @@ def initial_db(name=std_path):
 			 WHERE party_id = NEW.party_id AND 
 				   item = NEW.item;
 		END;
+
 		CREATE TRIGGER last_edited_trigger_itemlist_updated
-				 AFTER UPDATE
+         AFTER UPDATE OF party_id,
+                         item,
+                         brought_by
 					ON itemlist
 		BEGIN
 			UPDATE itemlist
@@ -122,7 +132,8 @@ def initial_db(name=std_path):
 			 WHERE party_id = NEW.party_id AND 
 				   item = NEW.item;
 		END;
-		DROP TRIGGER last_edited_trigger_participants;
+
+
 
 		CREATE TRIGGER last_edited_trigger_participants
 				 AFTER INSERT
@@ -133,15 +144,21 @@ def initial_db(name=std_path):
 			 WHERE party_id = NEW.party_id AND 
 				   participant_mail = NEW.participant_mail;
 		END;
-		CREATE TRIGGER last_edited_trigger_participants
-				 AFTER INSERT
-					ON participants
+
+		CREATE TRIGGER last_edited_trigger_participants_updated
+         AFTER UPDATE OF party_id,
+                         participant_mail,
+                         accepted
+            ON participants
 		BEGIN
 			UPDATE participants
 			   SET last_edited = datetime('now') 
 			 WHERE party_id = NEW.party_id AND 
 				   participant_mail = NEW.participant_mail;
 		END;
+
+
+
 		CREATE TRIGGER last_edited_trigger_parties
 				 AFTER INSERT
 					ON parties
@@ -150,14 +167,23 @@ def initial_db(name=std_path):
 			   SET last_edited = datetime('now') 
 			 WHERE party_id = NEW.party_id;
 		END;
+
 		CREATE TRIGGER last_edited_trigger_parties_updated
-				 AFTER UPDATE
-					ON parties
+         AFTER UPDATE OF id,
+                         title,
+                         date,
+                         time,
+                         address,
+                         owner
+            ON parties
 		BEGIN
 			UPDATE parties
 			   SET last_edited = datetime('now') 
 			 WHERE party_id = NEW.party_id;
 		END;
+
+
+
 		CREATE TRIGGER last_edited_trigger_users
 				 AFTER INSERT
 					ON users
@@ -166,34 +192,37 @@ def initial_db(name=std_path):
 			   SET last_edited = datetime('now') 
 			 WHERE mailaddress = NEW.mailaddress;
 		END;
+
 		CREATE TRIGGER last_edited_trigger_users_updated
-				 AFTER UPDATE
-					ON users
+         AFTER UPDATE OF mailaddress,
+                         name,
+                         password
+            ON users
 		BEGIN
 			UPDATE users
 			   SET last_edited = datetime('now') 
 			 WHERE mailaddress = NEW.mailaddress;
 		END;
+
 		"""
 		write_to_db(conn, cur, trigger_script)
+
+		print("created new Database ", name)
 		#bonus: encrypt passwords. http://blog.dornea.nu/2011/07/28/howto-keep-your-passwords-safe-using-sqlite-and-sqlcipher/
 
 ###Insert-Funktionen
 
 def insert_into_users(conn, cur, mailaddress, name, password):
+	encrypted_pw = hashlib.sha256(password.encode('utf-8')).hexdigest()
+	print(encrypted_pw)
+	
 	script = """
-	INSERT INTO users (mailaddress, name, password) VALUES(?,?,?);
+	INSERT INTO users (mailaddress, name, password) VALUES (?,?,?);
 	"""
-	parameters = [mailaddress, name, password]
+	parameters = [mailaddress, name, encrypted_pw]
 	write_to_db(conn, cur, script, parameters)
 
 def insert_into_parties(conn, cur, title, date, time, address, owner):
-
-	#generate id!!!!
-	
-	#cur.execute("SELECT MAX(id) FROM parties")
-	#id = cur.fetchone()[0] + 1
-
 	script = """
 	INSERT INTO parties (title, date, time, address, owner) VALUES (?,?,?,?,?)
 	RETURNING id;
@@ -202,7 +231,7 @@ def insert_into_parties(conn, cur, title, date, time, address, owner):
 	id = write_to_db(conn, cur, script, parameters)
 	
 	script = """
-	INSERT INTO participants VALUES (?,?,?);
+	INSERT INTO users (party_id, partcipant_mail, accepted) VALUES (?,?,?);
 	"""
 	parameters = [party_id, owner, 1]
 	write_to_db(conn, cur, script, parameters)
@@ -211,7 +240,7 @@ def insert_into_parties(conn, cur, title, date, time, address, owner):
 
 def insert_into_participants(conn, cur, party_id, participant_mail):
 	script = """
-	INSERT INTO participants VALUES (?,?,?);
+	INSERT INTO users (party_id, partcipant_mail, accepted) VALUES (?,?,?);
 	"""
 	parameters = [party_id, participant_mail, 0]
 	write_to_db(conn, cur, script, parameters)
@@ -221,14 +250,14 @@ def insert_into_itemlist(conn, cur, party_id, item):
 	#wie werden die Items übergeben? hier schon for-schleife oder beim aufruf jeweils?
 
 	script = """
-	INSERT INTO itemlist VALUES (?,?,?);
+	INSERT INTO users (party_id, item, brought_by) VALUES (?,?,?);
 	"""
 	parameters = [party_id, item, None]
 	write_to_db(conn, cur, script, parameters)
 
 def insert_into_friends(conn, cur, friend1, friend2):
 	script = """
-	INSERT INTO friends VALUES (?,?);
+	INSERT INTO users (friend1_mail, friend2_mail) VALUES (?,?);
 	"""
 	parameters = [friend1, friend2]
 	write_to_db(conn, cur, script, parameters)
@@ -380,13 +409,15 @@ def search_user(conn, cur, begriff, searching_user):
 
 def check_login(conn, cur, mailaddress, password):
 	cur.execute("SELECT password FROM users WHERE mailaddress = ?;", [mailaddress])
+	encrypted_pw = hashlib.sha256(password.encode('utf-8')).hexdigest()
 	try:
 		pw = cur.fetchone()[0]
+
 		#if cur.rowcount <= 0 :
 		#	print("hierrrr")
 		#	return False
 		#else:
-		if pw == password:
+		if pw == encrypted_pw:
 			return True
 		else:
 			return False
@@ -577,7 +608,7 @@ def change_participants(conn, cur, pid, user, operation):
 	
 	if operation == "new_participant":
 		script = """
-		INSERT INTO participants
+		INSERT INTO participants (party_id, participant_mail, accepted)
 		VALUES (?,?,0);
 		"""
 	elif operation == "accept":
@@ -620,9 +651,6 @@ def change_user(conn, cur, user, value, operation):
 		raise
 	parameters = [value, user]
 	write_to_db(conn, cur, script, parameters)
-
-	###OPTIONAL:
-	###USER UPDATES: PW & NAME
 
 ###util-funktionen
 

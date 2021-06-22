@@ -46,10 +46,10 @@ class Login(FlaskForm):
 
 #Klasse zum Anlegen einer neuen Veranstaltung
 class NewEvent(FlaskForm):
-    title = StringField(label="Titel ",validators=[InputRequired()])
-    date = DateField(label="Datum", default = date.today(), validators=[InputRequired()])
-    time = TimeField(label="Uhrzeit", validators=[InputRequired()])
-    address = TextAreaField(label="Ort",validators=[InputRequired()])
+    title = StringField(label="Titel ")
+    date = DateField(label="Datum", default = date.today())
+    time = TimeField(label="Uhrzeit")
+    address = TextAreaField(label="Ort")
     #Teilnehmer = SearchField (label="Teilnehmer tbd")
     submit = SubmitField("Erstellen")
 
