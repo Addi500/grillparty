@@ -4,42 +4,45 @@
 <div class="container-1">
     <h1>{{ party[1] }}</h1>
     <h2>am {{ party[2] }} um {{ party[3] }}</h2>
+    <br />
+    <h4>Ort: {{party[4]}}</h4>
+    <br />
+    <br />
     <form method="POST">
         <div id="edit">
 
-            <h4>Gaeste</h4>
+            <h5><u>Gaeste</u></h5>
             {% for guest in guests %}
 
-            <div class="FriendRequest">     
+            <div class="FriendRequest">
                 <div class="Friends">
-                    
+
                     <p>
-                        <h6>{{ guest[3] }} bringt {{ guest[4] }} mit. </h6>
-                        <br />
-                        <h6>{{ guest[2] }}</h6>
+                        <li><b>{{ guest[3] }} </b> bringt <i>{{ guest[1] }} </i>mit.</li>
                     </p>
                     <hr>
                 </div>
 
             </div>
             {% endfor %}
+            {% if unbound_items != 0 %}
 
-            <h4>Uebrige Items, die noch verteilt werden muessen</h4>
+            <h4>Uebrige Items, die noch verteilt werden muessen:</h4>
 
-            {% for item in items %}
-            <!-- do somethin -->
+            {% for unbound_item in unbound_items %}
+            <li>{{unbound_item[1]}}</li>
             {% endfor %}
+            {% else %}
+
+            <i>Alle Items verteilt</i>
+            {% endif %}
 
         </div>
-            <input type="submit" class="btn btn-light">
-            <a href='/dashboard' class="btn btn-dark">Abbrechen</a>
-</form>
+        <br />
+        <a href='/dashboard' class="btn btn-light">Zurueck zur Uebersicht</a>
+    </form>
 
     <!--{ form.submit() }}-->
-    
-
-
-
     <!--<h4>Items</h4>
 
     {% for item in items %}

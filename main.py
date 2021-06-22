@@ -181,9 +181,11 @@ def bearbeiten(pid):
     #form=NewEvent()
     
     party = view_party(conn, cur, pid) #Tupel mit den Party Attributen    
-    items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by      
+    items = select_itemlist(conn, cur, pid, "all") #Liste aller Items als Tupel bestehend aus item und brought_by      
     participants = select_participants(conn, cur, pid, "all")
-    guests = select_guests(conn, cur, pid) #participants mit items
+    guests = select_guests_items(conn, cur, pid) #participants mit items
+    unbound_items = select_itemlist(conn, cur, pid, "unbound")
+
     if request.method == "POST":
         changed_title = request.form["titel"]
         update_party(conn, cur, pid, changed_title, "title")
@@ -192,7 +194,7 @@ def bearbeiten(pid):
     
     
     #return "Erfolg"
-    return render_template("bearbeiten.html", party=party, items = items, participants=participants, guests = guests)
+    return render_template("bearbeiten.html", party=party, items = items, participants=participants, guests = guests, unbound_items=unbound_items)
 
    # form = itemlist()
    # party_info = view_party(conn, cur, party_id)
@@ -240,9 +242,6 @@ def friends():
        
     return render_template('friends.html', friend_requests_to_me=friend_requests_to_me, my_friends=my_friends, len_friend_requests_to_me=len_friend_requests_to_me)
 
-#@app.route(("/party/" + party_id))
-
-
 @app.route('/addfriend', methods = ["GET", "POST"])
 def addfriend():
     form = AddFriend()
@@ -264,7 +263,6 @@ def addfriend():
         
     return render_template('addfriend.html', form=form)
     
-#übergibt gesuchten User. Funktion für Buttons fehlt noch
 @app.route("/hinzufügen/", methods=['POST'])
 def Hinzufügen():
     session._get_current_object.__name__

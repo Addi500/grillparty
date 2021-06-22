@@ -455,23 +455,40 @@ def select_open_party_invites(conn, cur, user):
 		
 	return results
 
-def select_itemlist(conn, cur, party):
-	#returns list of all items of party with name who brings it
-
-	script = """
-	SELECT party_id, item, brought_by, users.name
-	FROM itemlist
-	LEFT JOIN users ON users.mailaddress = itemlist.brought_by
-	WHERE party_id = ?;
+def select_itemlist(conn, cur, party, type):
 	"""
-	parameters = [party]
-	cur.execute(script, parameters)
-	results = cur.fetchall()
-	for i in range(len(results)):
-		results[i]=list(results[i])
-		if results[i][2] == None:
-			results[i][2] = 0
-			print(results)
+	returns list of all items of party with name who brings it
+	type:
+	"all"
+	"unbound"
+	"""
+
+	if type == "all":
+		script = """
+		SELECT party_id, item, brought_by, users.name
+		FROM itemlist
+		LEFT JOIN users ON users.mailaddress = itemlist.brought_by
+		WHERE party_id = ?;
+		"""
+		parameters = [party]
+		cur.execute(script, parameters)
+		results = cur.fetchall()
+		for i in range(len(results)):
+			results[i]=list(results[i])
+			if results[i][2] == None:
+				results[i][2] = 0
+	elif type == "unbound":
+		script = """
+		SELECT party_id, item
+		FROM itemlist
+		WHERE party_id = ? AND (brought_by IS NULL);
+		"""	
+		parameters = [party]
+		cur.execute(script, parameters)
+		results = cur.fetchall()
+		print("hierrr", results)
+		if not results:
+			results = 0
 	return results
 
 def select_participants(conn, cur, pid, type):
@@ -511,19 +528,18 @@ def select_participants(conn, cur, pid, type):
 	results = cur.fetchall()
 	return results
 
-def select_guests(conn, cur, pid):
+def select_guests_items(conn, cur, pid):
 	script = """
-	SELECT participants.party_id, participants.participant_mail, participants.accepted, users.name, itemlist.item, itemlist.brought_by
-	FROM participants
-	INNER JOIN users ON users.mailaddress = participants.participant_mail
-	LEFT JOIN itemlist ON itemlist.brought_by = participants.participant_mail
-	WHERE participants.party_id = ?
+	SELECT party_id, GROUP_CONCAT(item, ", "), brought_by, users.name
+	FROM itemlist
+	INNER JOIN users on users.mailaddress = itemlist.brought_by
+	WHERE party_id = ?
+	GROUP BY brought_by
 	"""
 	parameters = [pid]
 	cur.execute(script, parameters)
 	results = cur.fetchall()
-	for i in range(len(results)):
-		pass
+	
 	return results
 
 
