@@ -22,7 +22,7 @@
     color: #f1f1f1;
     
   }
-
+  /* Responsives Verhalten bei Bildschirmverkleinerung */
   @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}
@@ -35,14 +35,15 @@
   }
   
   .container-1 {
-    margin-left: 200px; /* neben der Sidenav (Freunde, Veranstaltung & Einladungen) */
-  }
-
-  /* Formular zum Ertellen der Veranstaltung*/
-  .Formevent{
+    margin-left: 200px; /* neben der Sidenav (Freunde, Veranstaltung, Freunde hinzufügen & Einladungen) */
     border: 1px solid black;
     border-radius: 5px;
     padding: 15px;
+  }
+
+  /* Formular zum Erstellen der Veranstaltung*/
+  .Formevent{
+    
     margin-right: 200px;
   }
   
@@ -73,14 +74,18 @@
   }
   
   /* Layout für Suchergebnisse*/
+.Searchresults {
+  margin-right: 100px;
+}
+
+
+
 .Friend {
-    border: 1px solid black;
-    border-radius: 5px;
-    padding: 5px;
-    margin-right: 600px;
+    
     margin-left: auto;
     display: flex;
-    justify-content: space-between;
+    
+    
 }
 
   .Friend h3 {
@@ -88,9 +93,7 @@
     float: right;
   }
 
-  .Friend button {
-    width: 20%;
-  }
+ 
 
   
 
@@ -147,6 +150,10 @@ footer {
   align-items: center;
 }
 
+.table {
+  width: 70%
+}
+
 .alert-error {
     padding: 12px;
     border-radius: 3px;
@@ -158,11 +165,11 @@ footer {
 }
 
 .alert-info {
-    padding: 300px;
+    padding: 10px;
     border-radius: 3px;
     font-size: 1.2rem;
     margin-bottom: 16px;
-    border: 2px solid orange;
-    background-color: yellow;
+    border: 2px solid red;
+    background-color: white;
     color: black;
 }

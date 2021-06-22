@@ -2,6 +2,16 @@
 {% block overview%}
 
 <div class="container-1">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert-info">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+
+    {% endif %}
+    {% endwith %}
     <div class = "Partyinfo">
     <h2>{{ party[1] }}</h2><br>
     <h2>am {{ party[2] }} um {{ party[3] }}</h2>
@@ -11,26 +21,25 @@
     </div>
 <p>Bitte wählen Sie aus folgender Liste die Elemente aus, die Sie mitbringen möchten:</p>
 
+<form method="post">
 {% for item in items %}
-        <form>
-            <a href="#">
-                <h2>{{ item[0] }}</h2>
-                <h2>{{ item[1] }}</h2>
-                <input type="hidden" name="info" value="{{ item[0] }}" />
-                
-                </form>
+<div class="form-check form-check-inline">
 
-            </a>
-            <span class="badge badge-primary">{{ party[3] }}</span>
-            <hr>
-            <!--{ form.submit() }}-->
-        </form>
-        {% endfor %}
+    <input class="form-check-input" name="checkbox" type="checkbox" value="{{ item[1] }}" id="defaultCheck1">
+    <label class="form-check-label" for="defaultCheck1">
+        {{ item[1] }}
+    </label>
 
-
-
-
+    <input type="hidden" name="info" value="{{ item[1] }}" />
 </div>
 
+{% endfor %}
 
+
+
+<br>
+
+<input type="submit" name="cmdsubmit" class="btn btn-light">
+</form>
+</div>
 {% endblock %}

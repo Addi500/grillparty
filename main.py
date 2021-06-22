@@ -157,6 +157,7 @@ def dashboard():
     user = session["user"]
     own_parties = select_parties(conn, cur, user, "own")
     foreign_parties = select_parties(conn, cur, user, "foreign")
+    
     print(own_parties)
 
     if request.method == "POST":
@@ -335,9 +336,13 @@ def accept(pid):
     items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
     
     if request.method == "POST":
+        flash('Itemliste aktualisiert')
+        print("flashing")
         for item in request.form.getlist("checkbox"):
              change_itemlist(conn, cur, pid, item, "assign_to", user)
-        
+             print(item)
+        return redirect(url_for('dashboard'))
+             
     return render_template('anzeigen.html', items = items, party = party)
 
 @app.route("/decline/", methods=['POST'])
