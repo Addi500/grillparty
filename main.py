@@ -1,27 +1,19 @@
 
-from datetime import date, datetime
-from re import UNICODE
-import sqlite3
-from sqlite3.dbapi2 import Time
+from datetime import date
 from flask import Flask, render_template, request, redirect, flash
 from flask.globals import session
 from flask.helpers import url_for
-from flask_wtf import FlaskForm, CsrfProtect
-from werkzeug.wrappers import AcceptMixin
-from wtforms import widgets
+from flask_wtf import FlaskForm
 from wtforms.fields import StringField, PasswordField, SubmitField, TextAreaField
-from wtforms.fields.core import RadioField, SelectMultipleField
 from wtforms.fields.html5 import DateField, SearchField
-from wtforms.validators import Email, InputRequired, data_required, email, equal_to, length
+from wtforms.validators import Email, InputRequired, equal_to, length
 from db_connection import *
 from wtforms_components import TimeField, DateRange
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 
 app = Flask(__name__, template_folder='templates')
-#csrf = CsrfProtect()
 app.config['SECRET_KEY'] = 'secretKeyForCookieGeneration'
-#csrf.init_app(app)
+
 
 db_name = "dbrun5.db"
 initial_db(db_name)
@@ -37,14 +29,12 @@ class Registrate(FlaskForm):
     password = PasswordField(label="Passwort", validators=[InputRequired()]) 
     confirm = PasswordField(label="Passwortwiederholung", validators=[InputRequired(), equal_to('password', message='Passwörter stimmen nicht überein.')])
     submit = SubmitField("Registrieren")
-#Einspeisen in die Datenbank! Validierung nach Abgleich mit DB!
 
 #Klasse für Anmeldung
 class Login(FlaskForm):
     mailaddress = StringField(label="Mail-Adresse ", validators= [Email(message='Bitte eine gültige E-mailadresse eingeben.')])
     password = PasswordField(label="Passwort")
     submit = SubmitField("Anmelden")
-#Abgleich mit Datenbank, Fehlermeldungen (Userdaten nicht vorhanden) einbauen
 
 #Klasse zum Anlegen einer neuen Veranstaltung
 class NewEvent(FlaskForm):
@@ -52,24 +42,14 @@ class NewEvent(FlaskForm):
     date = DateField(label="Datum", validators=[DateRange(min=date.today())], default = date.today())
     time = TimeField(label="Uhrzeit", validators=[InputRequired()])
     address = TextAreaField(label="Ort", validators=[InputRequired()])
-    #Teilnehmer = SearchField (label="Teilnehmer tbd")
     submit = SubmitField("Erstellen")
 
 class AddFriend(FlaskForm):
     user = SearchField()
     submit = SubmitField("Suchen")
 
-class MultiCheckboxField(SelectMultipleField):
-    widget = widgets.ListWidget(prefix_label=False)
-    option_widget = widgets.CheckboxInput()
-    
-class itemlist(FlaskForm):
-    #itemlist = aus DB ziehen
-    #check = MultiCheckboxField('label', choices=itemlist)
-    #https://gist.github.com/doobeh/4667330
-    submit = SubmitField("Absenden")
- 
 
+#App-Routen
 @app.route('/')
 def index():
     return render_template('start.html')
@@ -122,8 +102,6 @@ def login():
     return render_template("login.html", form=form)
 
 @app.route("/newevent", methods= ["GET", "POST"])
-#https://tutorial101.blogspot.com/2020/11/python-flask-add-remove-input-fields.html
-#genutzte Vorlage für Zutatenliste - SQL Speicherung auch vorhanden 
 def newevent():
     form = NewEvent()
    
@@ -136,11 +114,11 @@ def newevent():
         session._get_current_object.__name__
         session["title"] = form.title.data
         session["date"] = form.date.data
-        session["time"] = str(form.time.data)
+        session["time"] = str(form.time.data) #Konvertierung in String, sonst Json Fehler
         session["address"] = form.address.data
         session["Teilnehmer"] = request.form.getlist("checkbox")
         session["itemlist"] = request.form.getlist('field[]')
-        #print("itemliste: ", session["itemlist"])        
+              
                
         id = insert_into_parties(conn, cur, session["title"], session["date"], session["time"], session["address"],user)
         for item in session["itemlist"]:
@@ -166,8 +144,7 @@ def dashboard():
         
         print(Submit)
         forward_message = "Moving Forward..."
-        #party_info = view_party(conn, cur, party_id)
-        #return render_template('bearbeiten.html', forward_message=forward_message,own_parties=own_parties, Submit=Submit)
+        
         return redirect(url_for('bearbeiten', pid=Submit))
     
 
@@ -175,11 +152,7 @@ def dashboard():
 
 @app.route("/bearbeiten/<pid>", methods=['POST', 'GET'])
 def bearbeiten(pid):
-    #pid = party[0] #gibt den Value zurück
-    #adriansfkt.getPartynamen(pid) (für dich!, deine Select where Party ID == pid)
-    #partyname = adriansfkt.getPartynamen(pid)
-    #render_template("bearbeiten.html", partyname = partyname )
-    #form=NewEvent()
+    #pid = party[0] #gibt den Value zurück -> Party-ID
     
     party = view_party(conn, cur, pid) #Tupel mit den Party Attributen    
     items = select_itemlist(conn, cur, pid, "all") #Liste aller Items als Tupel bestehend aus item und brought_by      
@@ -191,37 +164,8 @@ def bearbeiten(pid):
         changed_title = request.form["titel"]
         update_party(conn, cur, pid, changed_title, "title")
         print("Submit funktioniert")
-        #return redirect(url_for('bearbeiten'))
-    
-    
-    #return "Erfolg"
+        
     return render_template("bearbeiten.html", party=party, items = items, participants=participants, guests = guests, unbound_items=unbound_items)
-
-   # form = itemlist()
-   # party_info = view_party(conn, cur, party_id)
-       
-
-
-    #if request.method == 'POST':
-    #    session._get_current_object.__name__
-    #    if request.form['Acceptinvitation'] == '0':
-    #        print("1")
-    #    elif request.form['Acceptinvitation'] == '2':
-    #        print("2")
-#@app.route("/Anzeigen/<pid>", methods=['POST', 'GET'])
-#def anzeigen(pid):
-#    #pid = party[0] gibt den Value zurück
-#    #adriansfkt.getPartynamen(pid) (für dich!, deine Select where Party ID == pid)
-#    #partyname = adriansfkt.getPartynamen(pid)
-#    #render_template("bearbeiten.html", partyname = partyname )
-#    party = view_party(conn, cur, pid) #Tupel mit den Party Attributen
-#    print(party)
-#    items = select_itemlist(conn, cur, pid) #Liste aller Items als Tupel bestehend aus item und brought_by
-    
-#    print(submit)
-    
-#    return render_template("anzeigen.html", party=party, items = items)
-
 
 @app.route('/friends', methods= ["GET", "POST"])
 def friends():
@@ -256,6 +200,7 @@ def addfriend():
         suchergebnisse = search_user(conn, cur, session["user_search"], user)
         print (suchergebnisse)
         return render_template ('addfriend.html', form=form, suchergebnisse=suchergebnisse)
+    
     if "Hinzufügen" in request.form:
         friend_request(conn, cur, user, request.form["Hinzufügen"], "request")
         flash('Freund hinzugefügt')
@@ -267,8 +212,7 @@ def addfriend():
 @app.route("/hinzufügen/", methods=['POST'])
 def Hinzufügen():
     session._get_current_object.__name__
-    #db hinzufügen von Freunden definieren
-    #nach Hinzufügen auf addfriend rendern
+    
     return 'Erfolg'
 
 @app.route("/acceptinv/", methods=['POST'])
@@ -280,9 +224,6 @@ def AcceptFriends():
             print("1")
         elif request.form['Acceptinvitation'] == '2':
             print("2")
-        
-            #insert_into_friends()
-
     forward_message = "Moving Forward..."
 
     return render_template('friends.html', forward_message=forward_message);    
@@ -370,10 +311,6 @@ def Logout():
         
     return render_template('dashboard.html', forward_message=forward_message)
     
-#keine Klasse bisher angelegt, benötigt Übergabe der Einladungen aus der
-#Datenbank, Buttons noch ohne Funktion, Einladungsart (Freunde / Veranstaltung)
-# Einladung von: User, bei Veranstaltung komplette Ausgabe der Einladnung, neue form
-# für Auswahl der Mitbringsel
 
 
 if __name__ == '__main__':

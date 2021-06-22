@@ -4,7 +4,7 @@
 
 {% if session['logged_in'] %}
 
-
+<!-- New Navbar -->
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="/dashboard">Grillparty</a>
@@ -32,8 +32,8 @@
 </div>
 {% block overview %}
 <title> Grillparty - Dashboard</title>
-<!-- Page content -->
 <div class="main">
+    <!-- Flashes -->
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div class="alert-info">
