@@ -4,83 +4,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <title> Grillparty - Veranstaltung</title>
 
-<<<<<<< HEAD
-<div class="container-1">
-    <div class="Formevent">
-        <h1>Veranstaltung erstellen </h1>
-
-        <form method="POST">
-            {{ form.csrf_token() }}
-            {{ form.hidden_tag() }}
-
-            {{ form.title.label(class="form-label") }}
-            {{ form.title(class="form-control") }}
-            <br>
-            <div class="datetime">
-                <div class="date">
-                    {{ form.date.label(class="form-label") }}
-                    {{ form.date(class="form-control") }}
-                    <br>
-                </div>
-                <div class="time">
-                    {{ form.time.label(class="form-label") }}
-                    {{ form.time(class="form-control") }}
-                    <br>
-                </div>
-            </div>
-            {{ form.address.label(class="form-label") }}
-            {{ form.address(class="form-control") }}
-            <br>
-            <p>Teilnehmer</p>
-
-            <form>
-                {{ form.csrf_token() }}
-                {% for friend in friends %}
-
-                <div>
-
-                    <input class="form-check-input" type="checkbox" value="{{ friend[0] }}" id="defaultCheck1">
-                    <label class="form-check-label" for="defaultCheck1">
-                        {{ friend[0] }}
-                    </label>
-
-                    <input type="hidden" name="info" value="{{ friend[0] }}" />
-
-            </form>
-
-    </div>
-    <span class="badge badge-primary">{{ friend[0] }}</span>
-    <hr>
-    <!--{ form.submit() }}-->
-    {% endfor %}
-    </form>
-    {{ form.csrf_token() }}
-    <br>
-
-    <h3>Was dürfen Ihre Gäste mitbringen?</h3>
-    <form method="POST">
-        <div class="input-wrapper">
-            <div>
-                <br />
-                <input type="text" name="field[]" value="" />
-                <a href="javascript:void(0);" class="add-input" title="Add input"> <img src="/static/plus.png" /></a>
-            </div>
-        </div>
-        <br>
-        <input type="submit" name="cmdsubmit" class="btn btn-light">
-        <a href="/dashboard" class="btn btn-dark">Cancel</a>
-    </form>
-
-
-
-    {% for field, errors in form.errors.items() %}
-    <small class="form-text text-muted ">
-        {{ ', '.join(errors) }}
-    </small>
-    {% endfor %}
-</div>
-</div>
-=======
 <form method="post">
     <div class="container-1">
         <div class="Formevent">
@@ -146,7 +69,6 @@
         </small>
         {% endfor %}
     </div>
->>>>>>> 1eb5c66fb61211077489c69871c3d3c001ebf298
 </form>
 
 <!-- Jquery Skript für dynamisches Hinzufügen und Entfernen vol Elementen aus der Zutatenliste-->
