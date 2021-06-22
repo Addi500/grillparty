@@ -5,66 +5,68 @@
     <h1>{{ party[1] }}</h1>
     <h2>am {{ party[2] }} um {{ party[3] }}</h2>
     <form method="POST">
-    <div id="edit" contenteditable="true">
-    
+        <div id="edit" contenteditable="true">
 
-    
-        <p>Titel</p>
-        <input type="text" value="{{ party[1] }}">
-        
-        <br>
-        <p>Datum</p>
-        <input type="date" value="{{ party[2] }}">
-        <br>
-        <p>Uhrzeit</p>
-        <input type="time" value="{{ party[3] }}">
-        <br>
-        <p>Ort</p>
-        <input type="text" value="{{ party[4] }}">
-        <br>
-        
-        {% for participant in participant %}
-        
-       
-            
+
+
+            <p>Titel</p>
+            <input type="text" value="{{ party[1] }}">
+
+            <br>
+            <p>Datum</p>
+            <input type="date" value="{{ party[2] }}">
+            <br>
+            <p>Uhrzeit</p>
+            <input type="time" value="{{ party[3] }}">
+            <br>
+            <p>Ort</p>
+            <input type="text" value="{{ party[4] }}">
+            <br>
+
+            {% for participant in participant %}
+
+
+
             <input class="form-check-input" type="checkbox" value="{{ friend[0] }}" id="defaultCheck1">
             <label class="form-check-label" for="defaultCheck1">
                 {{ participant[1] }}
             </label>
-           
+
             <input type="hidden" name="info" value="{{ participant[0] }}" />
-            
-            </form>
 
-        
-        <span class="badge badge-primary">{{ participant[1] }}</span>
-        <hr>
-        <!--{ form.submit() }}-->
-        
+    </form>
+
+
+    <span class="badge badge-primary">{{ participant[1] }}</span>
+    <hr>
+    <!--{ form.submit() }}-->
     {% endfor %}
-        
-   
 
 
-        {% for item in items %}
-        
-            <a href="#">
-                <h2>{{ item[0] }}</h2>
-                <h2>{{ item[1] }}</h2>
-                <input type="hidden" name="info" value="{{ item[0] }}" />
-                <form action="/bearbeiten" method="post">
-                    <button name="Bearbeiten" type="submit" value="{{ party[0] }}">Bearbeiten</button>
-                </form>
 
-            </a>
-            <span class="badge badge-primary">{{ party[3] }}</span>
-            <hr>
-            <!--{ form.submit() }}-->
-        
-        {% endfor %}
+    <h4>Items</h4>
+
+    {% for item in items %}
+
+    <div>
+        <p>
+            {{ item[1] }}
+            {%if item[2] !=0%}
+            (mitgebracht von {{item[3]}})
+        </p>
+        {%endif%}
+        <input type="hidden" name="info" value="{{ item[0] }}" />
+        <form method="post">
+            <button name="delete_item" type="submit" value="{{ party[0] }}, {{item[1]}}">Entfernen</button>
+        </form>
     </div>
-<input type="submit" class = "btn btn-light">
-<a href= '/dashboard' class = "btn btn-dark">Abbrechen</a>
+    <span class="badge badge-primary">{{ party[3] }}</span>
+    <hr>
+    <!--{ form.submit() }}-->
+    {% endfor %}
+</div>
+<input type="submit" class="btn btn-light">
+<a href='/dashboard' class="btn btn-dark">Abbrechen</a>
 </form>
 
 </div>

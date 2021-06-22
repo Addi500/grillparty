@@ -1,6 +1,6 @@
 import sqlite3 as sql
 import os
-from datetime import datetime
+from datetime import date, datetime
 
 std_path = "database.db"
 
@@ -15,9 +15,11 @@ def write_to_db(connection, cursor, sql_script, parameters=[]):
 	try:
 		cursor.execute(sql_script, parameters)
 		connection.commit()
+		return connection.fetchall()
 	except:
 		### ERROR HANDLING
 		print("SQLError")
+		raise	
 
 def initial_db(name=std_path):
 	if os.path.exists(name):
@@ -31,7 +33,8 @@ def initial_db(name=std_path):
 				CREATE TABLE users (
 				mailaddress TEXT NOT NULL PRIMARY KEY,
 				name TEXT NOT NULL,
-				password TEXT NOT NULL);
+				password TEXT NOT NULL
+				last_edited TEXT);
 				"""
 		write_to_db(conn, cur, initialization_script)
 
@@ -43,6 +46,7 @@ def initial_db(name=std_path):
 				time TEXT NOT NULL,
 				address TEXT NOT NULL,
 				owner TEXT NOT NULL,
+				last_edited TEXT,
 				FOREIGN KEY (owner) REFERENCES users(mailaddress));
 				"""
 		write_to_db(conn, cur, initialization_script)
@@ -52,6 +56,7 @@ def initial_db(name=std_path):
 				party_id INT NOT NULL,
 				participant_mail TEXT NOT NULL,
 				accepted INT NOT NULL,
+				last_edited TEXT,
 				FOREIGN KEY (party_id) REFERENCES parties(id),
 				FOREIGN KEY (participant_mail) REFERENCES users(mailaddress));
 				"""
@@ -62,6 +67,7 @@ def initial_db(name=std_path):
 				party_id INT NOT NULL,
 				item TEXT NOT NULL,
 				brought_by TEXT,
+				last_edited TEXT,
 				FOREIGN KEY (party_id) REFERENCES parties(id),
 				FOREIGN KEY (brought_by) REFERENCES users(mailaddress));
 		"""
@@ -71,18 +77,112 @@ def initial_db(name=std_path):
 				CREATE TABLE friends (
 				friend1_mail TEXT NOT NULL,
 				friend2_mail TEXT NOT NULL,
+				last_edited TEXT,
 				PRIMARY KEY (friend1_mail, friend2_mail)
 				FOREIGN KEY (friend1_mail) REFERENCES users(mailaddress),
 				FOREIGN KEY (friend2_mail) REFERENCES users(mailaddress));
 		"""
 		write_to_db(conn, cur, initialization_script)
+
+		###trigger für last_edited date
+		trigger_script = """
+		CREATE TRIGGER last_edited_trigger_friends
+         AFTER INSERT
+            ON friends
+		BEGIN
+			UPDATE friends
+			   SET last_edited = datetime('now') 
+			 WHERE friend1_mail = NEW.friend1_mail AND 
+				   friend2_mail = NEW.friend2_mail;
+		END;
+		CREATE TRIGGER last_edited_trigger_friends_updated
+				 AFTER UPDATE
+					ON friends
+		BEGIN
+			UPDATE friends
+			   SET last_edited = datetime('now') 
+			 WHERE friend1_mail = NEW.friend1_mail AND 
+				   friend2_mail = NEW.friend2_mail;
+		END;
+		CREATE TRIGGER last_edited_trigger_itemlist
+				 AFTER INSERT
+					ON itemlist
+		BEGIN
+			UPDATE itemlist
+			   SET last_edited = datetime('now') 
+			 WHERE party_id = NEW.party_id AND 
+				   item = NEW.item;
+		END;
+		CREATE TRIGGER last_edited_trigger_itemlist_updated
+				 AFTER UPDATE
+					ON itemlist
+		BEGIN
+			UPDATE itemlist
+			   SET last_edited = datetime('now') 
+			 WHERE party_id = NEW.party_id AND 
+				   item = NEW.item;
+		END;
+		DROP TRIGGER last_edited_trigger_participants;
+
+		CREATE TRIGGER last_edited_trigger_participants
+				 AFTER INSERT
+					ON participants
+		BEGIN
+			UPDATE participants
+			   SET last_edited = datetime('now') 
+			 WHERE party_id = NEW.party_id AND 
+				   participant_mail = NEW.participant_mail;
+		END;
+		CREATE TRIGGER last_edited_trigger_participants
+				 AFTER INSERT
+					ON participants
+		BEGIN
+			UPDATE participants
+			   SET last_edited = datetime('now') 
+			 WHERE party_id = NEW.party_id AND 
+				   participant_mail = NEW.participant_mail;
+		END;
+		CREATE TRIGGER last_edited_trigger_parties
+				 AFTER INSERT
+					ON parties
+		BEGIN
+			UPDATE parties
+			   SET last_edited = datetime('now') 
+			 WHERE party_id = NEW.party_id;
+		END;
+		CREATE TRIGGER last_edited_trigger_parties_updated
+				 AFTER UPDATE
+					ON parties
+		BEGIN
+			UPDATE parties
+			   SET last_edited = datetime('now') 
+			 WHERE party_id = NEW.party_id;
+		END;
+		CREATE TRIGGER last_edited_trigger_users
+				 AFTER INSERT
+					ON users
+		BEGIN
+			UPDATE users
+			   SET last_edited = datetime('now') 
+			 WHERE mailaddress = NEW.mailaddress;
+		END;
+		CREATE TRIGGER last_edited_trigger_users_updated
+				 AFTER UPDATE
+					ON users
+		BEGIN
+			UPDATE users
+			   SET last_edited = datetime('now') 
+			 WHERE mailaddress = NEW.mailaddress;
+		END;
+		"""
+		write_to_db(conn, cur, trigger_script)
 		#bonus: encrypt passwords. http://blog.dornea.nu/2011/07/28/howto-keep-your-passwords-safe-using-sqlite-and-sqlcipher/
 
 ###Insert-Funktionen
 
 def insert_into_users(conn, cur, mailaddress, name, password):
 	script = """
-	INSERT INTO users VALUES(?,?,?);
+	INSERT INTO users (mailaddress, name, password) VALUES(?,?,?);
 	"""
 	parameters = [mailaddress, name, password]
 	write_to_db(conn, cur, script, parameters)
@@ -95,10 +195,18 @@ def insert_into_parties(conn, cur, title, date, time, address, owner):
 	#id = cur.fetchone()[0] + 1
 
 	script = """
-	INSERT INTO parties (title, date, time, address, owner) VALUES (?,?,?,?,?);
+	INSERT INTO parties (title, date, time, address, owner) VALUES (?,?,?,?,?)
+	RETURNING id;
 	"""
 	parameters = [title, date, time, address, owner]
+	id = write_to_db(conn, cur, script, parameters)
+	
+	script = """
+	INSERT INTO participants VALUES (?,?,?);
+	"""
+	parameters = [party_id, owner, 1]
 	write_to_db(conn, cur, script, parameters)
+
 	return id
 
 def insert_into_participants(conn, cur, party_id, participant_mail):
@@ -197,15 +305,17 @@ def select_parties(conn, cur, user, type):
 	script = ""
 	if type == "own":
 		script = """
-		SELECT *
+		SELECT parties.*, users.name
 		FROM parties
+		INNER JOIN users on users.mailaddress = parties.owner
 		WHERE owner = ?
 		"""		
 		parameters = [user]
 	elif type == "foreign":
 		script = """
-		SELECT *
+		SELECT parties.*, users.name
 		FROM parties
+		INNER JOIN users on users.mailaddress = parties.owner
 		WHERE id IN (SELECT party_id FROM participants WHERE participant_mail = ? AND accepted = 1)
 		AND owner != ?
 		"""
@@ -215,6 +325,13 @@ def select_parties(conn, cur, user, type):
 
 	cur.execute(script, parameters)
 	results = cur.fetchall()
+	for i in range(len(results)):
+		results[i] = list(results[i])
+		results[i][2] = readable_date_time(results[i][2], "date")
+		results[i][3] = readable_date_time(results[i][3], "time")
+	if len(results) == 0:
+		results = 0
+
 	return results
 
 def select_friends(conn, cur, user):
@@ -238,16 +355,20 @@ def select_friends(conn, cur, user):
 	friends = cur.fetchall()
 	return friends
 
-def search_user(conn, cur, begriff):
+def search_user(conn, cur, begriff, searching_user):
 	results =[]
+	begriff = "%"+begriff+"%"
+	print (begriff)
 
 	script = """
 	SELECT mailaddress, name
 	FROM users
-	WHERE name LIKE (?);
+	WHERE (name LIKE (?))
+	AND mailaddress NOT IN (SELECT friend2_mail FROM friends WHERE friend1_mail = ?)
+	AND mailaddress NOT IN (?);
 	"""
 
-	parameters = [begriff]
+	parameters = [begriff, searching_user, searching_user]
 	cur.execute(script, parameters)
 	results = cur.fetchall()
 
@@ -258,9 +379,13 @@ def search_user(conn, cur, begriff):
 	return results
 
 def check_login(conn, cur, mailaddress, password):
+	cur.execute("SELECT password FROM users WHERE mailaddress = ?;", [mailaddress])
 	try:
-		cur.execute("SELECT password FROM users WHERE mailaddress = ?;", [mailaddress])
 		pw = cur.fetchone()[0]
+		#if cur.rowcount <= 0 :
+		#	print("hierrrr")
+		#	return False
+		#else:
 		if pw == password:
 			return True
 		else:
@@ -282,8 +407,9 @@ def select_open_party_invites(conn, cur, user):
 	#returns list of titles, date and address of open invites to parties
 	
 	script = """
-	SELECT id, title, date, address, time, owner
+	SELECT id, title, date, time, address, owner, users.name
 	FROM parties
+	INNER JOIN users on users.mailaddress = parties.owner
 	WHERE parties.id
 	IN (SELECT party_id FROM participants WHERE participant_mail = ? AND accepted = 0);
 	"""
@@ -291,6 +417,13 @@ def select_open_party_invites(conn, cur, user):
 	parameters = [user]
 	cur.execute(script, parameters)
 	results = cur.fetchall()
+	for party in results:
+		party = list(party)
+		party[2] = readable_date_time(party[2], "date")
+		party[3] = readable_date_time(party[3], "time")
+	if len(results) == 0:
+		results = 0
+		
 	return results
 
 def select_itemlist(conn, cur, party):
@@ -305,6 +438,12 @@ def select_itemlist(conn, cur, party):
 	parameters = [party]
 	cur.execute(script, parameters)
 	results = cur.fetchall()
+	for i in range(len(results)):
+		results[i]=list(results[i])
+		if results[i][2] == None:
+			results[i][2] = 0
+			print("in der if")
+	print(results)
 	return results
 
 ###UPDATE-Funktionen
@@ -458,6 +597,33 @@ def change_participants(conn, cur, pid, user, operation):
 	parameters = [pid, user]
 	write_to_db(conn, cur, script, parameters)
 
+def change_user(conn, cur, user, value, operation):
+	"""
+	operations:
+	"name"
+	"pw"
+	"""
+	if operation == "name":
+		script = """
+		UPDATE users
+		SET name = ?
+		WHERE mailadress = ?
+		"""
+	elif operation == "pw":
+		script = """
+		UPDATE users
+		SET password = ?
+		WHERE mailadress = ?
+		"""
+	else:
+		print("wrong operation")
+		raise
+	parameters = [value, user]
+	write_to_db(conn, cur, script, parameters)
+
+	###OPTIONAL:
+	###USER UPDATES: PW & NAME
+
 ###util-funktionen
 
 def readable_date_time(input, type):
@@ -471,6 +637,4 @@ def readable_date_time(input, type):
 		datetimeobject = datetime.strptime(input, '%H:%M:%S')
 		return datetimeobject.strftime("%H:%M")
 	else:
-		print("wrong type")
-
-	
+		print("wrong type")	

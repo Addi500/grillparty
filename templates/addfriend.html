@@ -4,6 +4,16 @@
 <title> Grillparty - Freunde</title>
 <div class="container-1">
 
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert-info">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+
+    {% endif %}
+    {% endwith %}
     <div class="Search">
         <h1> Freunde hinzufügen</h1>
 
@@ -14,16 +24,23 @@
         </form>
 
     </div>
+    {% if suchergebnisse == 0 %}
+    <p>Es gab keine Treffer für Ihre Suche. Probieren Sie es noch einmal mit einem anderen Suchbegriff.</p>
+    {% else %}
 
-    <div class="Suchergebnisse">
-
-        {% for suchergebnis in suchergebnisse %}
-        <p>{{suchergebnis[0]}}</p>
-        <form action="/hinzufügen/" method="post">
-            <button name="Hinzufügen" type="submit" value="Hallo" class="btn btn-light">Hinzufügen</button>
+    {% for suchergebnis in suchergebnisse %}
+    <div class="Friend">
+        <h4>{{suchergebnis[1]}}</h4>
+        <!--<h6>{{suchergebnis[0]}}</h6>-->
+        <input type="hidden" name="info" value="{{ suchergebnis[0] }}" />
+        <form method="post">
+            <button name="Hinzufügen" type="submit" value="{{ suchergebnis[0] }}" class="Friend button">Hinzufügen</button>
         </form>
+
     </div>
+    <br />
     {% endfor %}
+    {% endif %}
 
 
 </div>
