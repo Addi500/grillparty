@@ -12,6 +12,7 @@
         <div id="edit">
 
             <h5><u>Teilnehmer</u></h5>
+            {%if guests != 0%}
             {% for guest in guests %}
 
             <div class="FriendRequest">
@@ -25,9 +26,12 @@
 
             </div>
             {% endfor %}
+            {%else%}
+            <i>Es sind noch keine Antworten vorhanden</i>
+            {%endif%}
             {% if unbound_items != 0 %}
 
-            <h4>Items, die noch nicht zugeteilt sind:</h4>
+            <h5><u>Items, die noch nicht zugeteilt sind:</u></h5>
 
             {% for unbound_item in unbound_items %}
             <li>{{unbound_item[1]}}</li>

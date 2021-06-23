@@ -48,6 +48,7 @@
     <h2>Meine Freunde:</h2>
     <br>
     <div class="FriendRequest">
+        {% if my_friends != 0%}
         {% for friend in my_friends %}
         <div class="Friends">
             <p>
@@ -58,15 +59,16 @@
                     <form method="post">
                         <button name="delete_friend" type="submit" value="{{ friend[1] }}" class="btn btn-light">Löschen</button>
                     </form>
+                    </div>
             </p>
-            <span class="badge badge-primary">{{ friend[1] }}</span>
             <hr>
         </div>
+        {% endfor %}
+        {%else%}
+        <i>Es sind noch keine Freunde vorhanden, fügen Sie doch <a href="/addfriend">hier</a> welche hinzu.</i>
+        {% endif %}
     </div>
-    {% endfor %}
-</div>
-
-
+    
 </div>
 
 

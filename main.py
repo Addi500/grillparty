@@ -169,7 +169,6 @@ def friends():
     friend_requests_to_me = check_for_friend_requests(conn, cur, user, "foreign_requests")
     my_friends = select_friends(conn, cur, user)
     len_friend_requests_to_me = len(friend_requests_to_me)
-    print("anfragen:", friend_requests_to_me)
 
     if request.method == "POST":
         if "Acceptinvitation" in request.form:
@@ -222,11 +221,13 @@ def invitations():
         if "Accept" in request.form:
             change_participants(conn, cur, request.form["Accept"], user, "accept")
             pid = request.form["Accept"]
+            return redirect(url_for('accept', pid=pid))
         elif "Decline" in request.form:
             change_participants(conn, cur, request.form["Decline"], user, "delete")
             pid = request.form["Decline"]
+            return redirect(url_for("dashboard"))
 
-        return redirect(url_for('accept', pid=pid))
+        
 
     return render_template('invitations.html', invites = invites)
 

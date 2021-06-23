@@ -374,6 +374,8 @@ def select_friends(conn, cur, user):
 	parameters = [user, user]
 	cur.execute(script, parameters)
 	friends = cur.fetchall()
+	if len(friends) == 0:
+		friends = 0
 	return friends
 
 def search_user(conn, cur, begriff, searching_user):
@@ -534,6 +536,8 @@ def select_guests_items(conn, cur, pid, type="all", user=None):
 		parameters = [pid]
 		cur.execute(script, parameters)
 		results = cur.fetchall()
+		if len(results) == 0:
+			results = 0
 	elif type == "one":
 		if user == None:
 			raise
@@ -548,8 +552,8 @@ def select_guests_items(conn, cur, pid, type="all", user=None):
 			parameters = [pid, user]
 			cur.execute(script, parameters)
 			results = cur.fetchone()
-
-	
+			if len(results) == 0:
+				results = 0	
 	
 	return results
 
