@@ -12,13 +12,9 @@
     <div class="collapse navbar-collapse"></div>
     <ul class="nav navbar-nav navbar-right">
         <form action="/logout/" method="post">
-
             <button class="btn btn-light" type="submit">Logout</button>
-
         </form>
-
     </ul>
-    </ul></div>
 </nav>
 
 <!-- Side navigation -->
@@ -26,8 +22,8 @@
     <a href="/newevent">Veranstaltung erstellen</a>
     <a href="/invitations">Einladungen</a>
     <a href="/friends">Freunde</a>
-    
-  
+
+
 
 </div>
 {% block overview %}
@@ -41,7 +37,7 @@
         <p>{{ message }}</p>
         {% endfor %}
     </div>
-   {% endif %}
+    {% endif %}
     {% endwith %}
 
     <h1> Eigene Veranstaltungen</h1>
@@ -51,31 +47,29 @@
     {%else%}
     {% for party in own_parties %}
 
-        <h3>{{ party[1] }}</h3>
-        
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Datum</th>
-                    <th scope="col">Uhrzeit</th>
-                    <th scope="col">Ort</th>
+    <h3>{{ party[1] }}</h3>
 
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ party[2] }}</td>
-                    <td>{{ party[3] }}</td>
-                    <td>{{ party[4] }}</td>
-                    <td class="align-middle" >
-                        <form method="post">
-                            <button name="submit" class="btn btn-light" type="submit" value="{{ party[0] }}">Anzeigen</button>
-                        </form>
-                </tr>
-            </tbody>
-        </table>   
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Datum</th>
+                <th scope="col">Uhrzeit</th>
+                <th scope="col">Ort</th>
 
-        </form>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ party[2] }}</td>
+                <td>{{ party[3] }}</td>
+                <td>{{ party[4] }}</td>
+                <td class="align-middle">
+                    <form method="post">
+                        <button name="submit" class="btn btn-light" type="submit" value="{{ party[0] }}">Anzeigen</button>
+                    </form>
+            </tr>
+        </tbody>
+    </table>
 
     {% endfor %}
     {% endif %}
@@ -93,6 +87,8 @@
                     <th scope="col">Uhrzeit</th>
                     <th scope="col">Ort</th>
                     <th scope="col">Gastgeber</th>
+                    <th scope="col">Meine mitgebrachten Items</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -100,7 +96,8 @@
                     <td>{{ party[2] }}</td>
                     <td>{{ party[3] }}</td>
                     <td>{{ party[4] }}</td>
-                    <td>{{ party[6] }}</td>
+                    <td>{{ party[7] }}</td>
+                    <td>{{ party[8] }}</td>
 
                 </tr>
             </tbody>
@@ -115,7 +112,6 @@
     {% endfor %}
     {% endif %}
 </div>
-</body>
 
 {% endblock %}
 
@@ -135,6 +131,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/help">Hilfe</a>
                     </li>
+                </ul>
             </div>
             <div class="collapse navbar-collapse"></div>
             <ul class="nav navbar-nav navbar-right">
@@ -144,7 +141,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/registrate">Registrieren</a>
                 </li>
-            </ul>
             </ul>
         </div>
     </nav>

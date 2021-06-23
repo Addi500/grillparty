@@ -7,26 +7,35 @@
         <h1>Grillparty</h1>
         <p>Eine einfache Möglichkeit um Grillpartys zu verwalten.</p>
     </div>
-<div class = "container-5">
-<h1>Anmelden </h1>
-<form method="POST">
-    {{ form.hidden_tag() }}
-      
-    {{ form.mailaddress.label(class="form-label") }}  
-    {{ form.mailaddress(class="form-control") }}
-    <br>
-    {{ form.password.label(class="form-label") }}  
-    {{ form.password(class="form-control") }}
-    {% for field, errors in form.errors.items() %}
-    <small class="form-text text-muted ">
-        {{ ', '.join(errors) }}
-    </small>
-    {% endfor %}
-    <br>
-    <br>
-    {{ form.submit() }}
-</form>
-</div>
+    <div class="container-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert-info">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <h1>Anmelden </h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            {{ form.mailaddress.label(class="form-label") }}
+            {{ form.mailaddress(class="form-control") }}
+            <br>
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control") }}
+            {% for field, errors in form.errors.items() %}
+            <small class="form-text text-muted ">
+                {{ ', '.join(errors) }}
+            </small>
+            {% endfor %}
+            <br>
+            <br>
+            {{ form.submit() }}
+        </form>
+    </div>
 </div>
 <br><br><br><br><br><br>
 <br><br>

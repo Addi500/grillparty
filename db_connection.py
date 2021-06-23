@@ -18,15 +18,13 @@ def write_to_db(connection, cursor, sql_script, parameters=[]):
 		cursor.execute(sql_script, parameters)
 		connection.commit()
 		return cursor.lastrowid
-	except:
-		### ERROR HANDLING
+	except:		
 		print("SQLError")
 		raise	
 
 def initial_db(name=std_path):
-	if os.path.exists(name):
-		#do more stuff
-		print("Datei bereits vorhanden")
+	if os.path.exists(name):		
+		print("Vorhandene DB-Datei gefunden")
 	else:
 		print("...creating new Database")
 
@@ -208,7 +206,6 @@ def initial_db(name=std_path):
 		cur.executescript(trigger_script)
 
 		print("created new Database ", name)
-		#bonus: encrypt passwords. http://blog.dornea.nu/2011/07/28/howto-keep-your-passwords-safe-using-sqlite-and-sqlcipher/
 
 ###Insert-Funktionen
 
@@ -224,16 +221,11 @@ def insert_into_users(conn, cur, mailaddress, name, password):
 
 def insert_into_parties(conn, cur, title, date, time, address, owner):
 	script = """
-	INSERT INTO parties (id, title, date, time, address, owner) VALUES (NULL,?,?,?,?,?);
+	INSERT INTO parties (id, title, date, time, address, owner)
+	VALUES (NULL,?,?,?,?,?);
 	"""
 	parameters = [title, date, time, address, owner]
 	id = write_to_db(conn, cur, script, parameters)
-	
-	#script = """
-	#INSERT INTO participants (party_id, participant_mail, accepted) VALUES (?,?,?);
-	#"""
-	#parameters = [party_id, owner, 1]
-	#write_to_db(conn, cur, script, parameters)
 
 	return id
 
@@ -411,16 +403,12 @@ def check_login(conn, cur, mailaddress, password):
 	encrypted_pw = hashlib.sha256(password.encode('utf-8')).hexdigest()
 	try:
 		pw = cur.fetchone()[0]
-
-		#if cur.rowcount <= 0 :
-		#	print("hierrrr")
-		#	return False
-		#else:
 		if pw == encrypted_pw:
 			return True
 		else:
 			return False
 	except:
+		print("except-Anweisung im Login")
 		return False
 
 def check_duplicate(conn, cur, table, column, value):
@@ -529,17 +517,39 @@ def select_participants(conn, cur, pid, type):
 	results = cur.fetchall()
 	return results
 
-def select_guests_items(conn, cur, pid):
-	script = """
-	SELECT party_id, GROUP_CONCAT(item, ", "), brought_by, users.name
-	FROM itemlist
-	INNER JOIN users on users.mailaddress = itemlist.brought_by
-	WHERE party_id = ?
-	GROUP BY brought_by
+def select_guests_items(conn, cur, pid, type="all", user=None):
 	"""
-	parameters = [pid]
-	cur.execute(script, parameters)
-	results = cur.fetchall()
+	types:
+	"all"
+	"one" (with user)
+	"""
+	if type == "all":
+		script = """
+		SELECT party_id, GROUP_CONCAT(item, ", "), brought_by, users.name
+		FROM itemlist
+		INNER JOIN users on users.mailaddress = itemlist.brought_by
+		WHERE party_id = ?
+		GROUP BY brought_by
+		"""
+		parameters = [pid]
+		cur.execute(script, parameters)
+		results = cur.fetchall()
+	elif type == "one":
+		if user == None:
+			raise
+		else:
+			script = """
+			SELECT party_id, GROUP_CONCAT(item, ", "), brought_by, users.name
+			FROM itemlist
+			INNER JOIN users on users.mailaddress = itemlist.brought_by
+			WHERE party_id = ? AND brought_by = ?
+			GROUP BY brought_by
+			"""
+			parameters = [pid, user]
+			cur.execute(script, parameters)
+			results = cur.fetchone()
+
+	
 	
 	return results
 

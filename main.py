@@ -11,33 +11,31 @@ from db_connection import *
 from wtforms_components import TimeField, DateRange
 
 
+###Basics
+
 app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = 'secretKeyForCookieGeneration'
 
-
-db_name = "dbrun5.db"
+db_name = "dbrun6.db"
 initial_db(db_name)
 conn, cur = establish_connection(db_name)
 
-current_user = ""
 
+###Klassen
 
-#Klasse für Registrierung
-class Registrate(FlaskForm):
+class Registrate(FlaskForm): #Klasse für Registrierung
     User = StringField(label="Username", validators=[InputRequired(), length(min=1, max=10, message='Username darf 1-10 Zeichen enthalten')])
     mailaddress = StringField(label="Mail-Adresse ", validators=[InputRequired(), Email(message='Bitte eine gültige E-mailadresse eingeben.')])
     password = PasswordField(label="Passwort", validators=[InputRequired()]) 
     confirm = PasswordField(label="Passwortwiederholung", validators=[InputRequired(), equal_to('password', message='Passwörter stimmen nicht überein.')])
     submit = SubmitField("Registrieren")
 
-#Klasse für Anmeldung
-class Login(FlaskForm):
-    mailaddress = StringField(label="Mail-Adresse ", validators= [Email(message='Bitte eine gültige E-mailadresse eingeben.')])
+class Login(FlaskForm): #Klasse für Anmeldung
+    mailaddress = StringField(label="Mail-Adresse ", validators= [Email(message='Ungültige E-Mailadresse.')])
     password = PasswordField(label="Passwort")
     submit = SubmitField("Anmelden")
 
-#Klasse zum Anlegen einer neuen Veranstaltung
-class NewEvent(FlaskForm):
+class NewEvent(FlaskForm): #Klasse zum Anlegen einer neuen Veranstaltung
     title = StringField(label="Titel", validators=[InputRequired()])
     date = DateField(label="Datum", validators=[DateRange(min=date.today())], default = date.today())
     time = TimeField(label="Uhrzeit", validators=[InputRequired()])
@@ -50,6 +48,7 @@ class AddFriend(FlaskForm):
 
 
 #App-Routen
+
 @app.route('/')
 def index():
     return render_template('start.html')
@@ -75,8 +74,6 @@ def registrate():
         return render_template("registrate_success.html")
     return render_template("registrate.html", form=form)
 
-    #Button zu Anmeldung in die html registrate-success einbauen
-
 @app.route("/login", methods=["GET","POST"])
 def login():
     form = Login()
@@ -94,10 +91,11 @@ def login():
             
             session['logged_in']=True 
             return redirect("/dashboard")
-        else:
-            print("wrong pw")
+        else:            
             #falsches Passwort
-            pass
+            print("wrong pw")
+            flash("Falsche Email oder falsches Passwort")
+            return redirect("/login")
 
     return render_template("login.html", form=form)
 
@@ -110,22 +108,24 @@ def newevent():
     print(friends)
 
     if form.validate_on_submit():
-
         session._get_current_object.__name__
         session["title"] = form.title.data
         session["date"] = form.date.data
         session["time"] = str(form.time.data) #Konvertierung in String, sonst Json Fehler
         session["address"] = form.address.data
         session["Teilnehmer"] = request.form.getlist("checkbox")
-        session["itemlist"] = request.form.getlist('field[]')
-              
+        session["itemlist"] = request.form.getlist('field[]')              
                
         id = insert_into_parties(conn, cur, session["title"], session["date"], session["time"], session["address"],user)
+        #owner als participant hinzufügen
+        insert_into_participants(conn, cur, id, user)
+        change_participants(conn, cur, id, user, "accept")
+
         for item in session["itemlist"]:
-            insert_into_itemlist(conn, cur, id, item) #change to list above
+            insert_into_itemlist(conn, cur, id, item)
         for participant in session["Teilnehmer"]:
             print(participant)
-            insert_into_participants(conn, cur, id, participant) #change to list above
+            insert_into_participants(conn, cur, id, participant)
         return redirect(url_for("dashboard"))
     return render_template("newevent.html", form=form, friends = friends)
 
@@ -135,25 +135,20 @@ def dashboard():
     user = session["user"]
     own_parties = select_parties(conn, cur, user, "own")
     foreign_parties = select_parties(conn, cur, user, "foreign")
-    
-    print(own_parties)
-
-    if request.method == "POST":
-        
-        Submit = request.form.get("submit")
-        
-        print(Submit)
-        forward_message = "Moving Forward..."
-        
-        return redirect(url_for('bearbeiten', pid=Submit))
-    
+    try:
+        for i in range(len(foreign_parties)):
+            guest_items = select_guests_items(conn, cur, foreign_parties[i][0], "one", user)
+            foreign_parties[i].append(guest_items[1])
+    except:
+        print("Keine Items vorhanden")
+    if request.method == "POST":        
+        Submit = request.form.get("submit")                
+        return redirect(url_for('bearbeiten', pid=Submit))   
 
     return render_template("dashboard.html", foreign_parties=foreign_parties, own_parties=own_parties)   
 
 @app.route("/bearbeiten/<pid>", methods=['POST', 'GET'])
-def bearbeiten(pid):
-    #pid = party[0] #gibt den Value zurück -> Party-ID
-    
+def bearbeiten(pid):    
     party = view_party(conn, cur, pid) #Tupel mit den Party Attributen    
     items = select_itemlist(conn, cur, pid, "all") #Liste aller Items als Tupel bestehend aus item und brought_by      
     participants = select_participants(conn, cur, pid, "all")
@@ -214,39 +209,6 @@ def addfriend():
         return redirect(url_for('addfriend'))
         
     return render_template('addfriend.html', form=form)
-    
-@app.route("/hinzufügen/", methods=['POST'])
-def Hinzufügen():
-    session._get_current_object.__name__
-    
-    return 'Erfolg'
-
-@app.route("/acceptinv/", methods=['POST'])
-def AcceptFriends():
-    session._get_current_object.__name__
-    
-    if request.method == 'POST':
-        if 'Acceptinvitation' in request.form:
-            print("1")
-        elif request.form['Acceptinvitation'] == '2':
-            print("2")
-    forward_message = "Moving Forward..."
-
-    return render_template('friends.html', forward_message=forward_message);    
-
-@app.route("/declineinv/", methods=['POST'])
-def DeclineFriends():
-    session._get_current_object.__name__
-    
-    if request.method == 'POST':
-        if request.form['Declineinvitation'] == '0':
-            print("1")
-        elif request.form['Declineinvitation'] == '2':
-            print("2")
-
-    forward_message = "Moving Forward..."
-
-    return render_template('friends.html', forward_message=forward_message);    
 
 @app.route('/invitations', methods=['POST', 'GET'])
 def invitations():
@@ -288,21 +250,6 @@ def accept(pid):
              
     return render_template('anzeigen.html', items = items, party = party)
 
-@app.route("/decline/", methods=['POST'])
-def Decline():
-    session._get_current_object.__name__
-
-    script_decline = """
-    DELETE FROM participants
-    WHERE party_id = ? AND participant_mail = ?;
-    """
-    print("Declined2")
-    cur.execute(script_decline, [request.form['Decline'], session["user"]])
-    conn.commit()
-
-    forward_message = "Moving Forward..."
-    return render_template('dashboard.html', forward_message=forward_message)
-
 @app.route("/logout/", methods=['POST'])
 def Logout():
     session._get_current_object.__name__    
@@ -311,13 +258,11 @@ def Logout():
         session['logged_in']=False
         session["address"] = None
         session ['user'] = None
-        print("Ich bin ausgeloggt")
+        print("Logged out")
         return render_template('start.html')
         
         
-    return render_template('dashboard.html', forward_message=forward_message)
-    
-
+    return render_template('dashboard.html', forward_message=forward_message) 
 
 if __name__ == '__main__':
     app.run()
