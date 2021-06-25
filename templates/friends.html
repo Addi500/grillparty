@@ -2,7 +2,9 @@
 
 {% block overview%}
 <div class=" container-1">
+
     <!-- Flashes -->
+
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div class="alert-info">
@@ -15,9 +17,13 @@
 
     <title> Grillparty - Freunde</title>
 
+<!--Button zum Hinzufügen von Freunden  -->
+
     <div class="button">
         <a href="/addfriend" class="btn btn-secondary btn-lg w-100">Freunde hinzufügen</a>
     </div>
+
+<!--Anzeige von vorhandenen Freundschaftsanfragen-->
 
     {% if len_friend_requests_to_me != 0 %}
     <br>
@@ -45,6 +51,9 @@
     {% endif %}
 
     <br>
+    
+<!--Anzeige von bereits vorhandenen Freunden -->
+
     <h2>Meine Freunde:</h2>
     <br>
     <div class="FriendRequest">

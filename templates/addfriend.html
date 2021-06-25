@@ -1,8 +1,11 @@
-﻿{% extends "dashboard.html" %}
+﻿<!--Block Veranstaltungsübersicht -->
+{% extends "dashboard.html" %}
 
 {% block overview%}
 <title> Grillparty - Freunde</title>
 <div class="container-1">
+
+<!-- Flashes -->
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -14,6 +17,9 @@
 
     {% endif %}
     {% endwith %}
+
+<!-- Formular usersuche -->
+
     <div class="Search">
         <h1> Freunde hinzufügen</h1>
 
@@ -32,22 +38,22 @@
     {% for suchergebnis in suchergebnisse %}
     <div class="d-flex justify-content-between">
         <div class="d-flex">
-        <h4>{{suchergebnis[1]}}</h4></div>
+            <h4>{{suchergebnis[1]}}</h4></div>
        
         
-        <div class="d-flex">
-            <input type="hidden" name="info" value="{{ suchergebnis[0] }}" />
-        <form method="post">
-            <button name="Hinzufügen" type="submit" value="{{ suchergebnis[0] }}" class="btn btn-light">Hinzufügen</button>
-        </form>
-        </div>
+            <div class="d-flex">
+                <input type="hidden" name="info" value="{{ suchergebnis[0] }}" />
+                <form method="post">
+                    <button name="Hinzufügen" type="submit" value="{{ suchergebnis[0] }}" class="btn btn-light">Hinzufügen</button>
+                </form>
+            </div>
         </div>
 
         <hr>
     <br>
 
     {% endfor %}
-</div>
+    </div>
     {% endif %}
 
 

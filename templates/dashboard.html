@@ -1,15 +1,20 @@
-{% extends "main.html" %}
+<!--Blockieren der Navbar, da andere Elemente benötigt -->
 
+{% extends "main.html" %}
 {% block navbar %}
+
+<!-- Prüfung ob User eingeloggt -->
 
 {% if session['logged_in'] %}
 
-<!-- New Navbar -->
+<!-- Neue Navbar -->
+
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="/dashboard">Grillparty</a>
     </div>
-    <div class="collapse navbar-collapse"></div>
+    <div class="collapse navbar-collapse">
+    </div>
     <ul class="nav navbar-nav navbar-right">
         <form action="/logout/" method="post">
             <button class="btn btn-light" type="submit">Logout</button>
@@ -17,19 +22,23 @@
     </ul>
 </nav>
 
-<!-- Side navigation -->
+<!-- Seitennavigation -->
+
 <div class="sidenav">
     <a href="/newevent">Veranstaltung erstellen</a>
     <a href="/invitations">Einladungen</a>
     <a href="/friends">Freunde</a>
-
-
-
 </div>
+
+<!--Blockierung der Übersicht -->
+
 {% block overview %}
 <title> Grillparty - Dashboard</title>
+
 <div class="main">
+
     <!-- Flashes -->
+
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div class="alert-info">
@@ -47,6 +56,8 @@
     {%else%}
     {% for party in own_parties %}
 
+<!--Übersichtstabellen der eigens erstellten Veranstaltungen -->
+
     <h3>{{ party[1] }}</h3>
 
     <table class="table">
@@ -55,7 +66,6 @@
                 <th scope="col">Datum</th>
                 <th scope="col">Uhrzeit</th>
                 <th scope="col">Ort</th>
-
             </tr>
         </thead>
         <tbody>
@@ -73,6 +83,8 @@
 
     {% endfor %}
     {% endif %}
+
+<!--Übersicht der angenommenen Veranstaltungen von Freunden -->
 
     {% if foreign_parties != 0 %}
     <h1>Parties von Freunden</h1>
@@ -103,8 +115,6 @@
             </tbody>
         </table>
         <input type="hidden" name="info" value="{{ party[0] }}" />
-
-
     </p>
     <span class="badge badge-primary">{{ party[1] }}</span>
     <hr>
@@ -115,6 +125,7 @@
 
 {% endblock %}
 
+<!--Möglichkeit zum Anmelden, wenn User nicht eingeloggt. -->
 
 {% else %}
 <body>

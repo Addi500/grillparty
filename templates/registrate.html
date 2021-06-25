@@ -1,14 +1,18 @@
+<!-- Content-Block -->
 {% extends "main.html" %}
-
 {% block content%}
+
 <title>Grillparty - Registrieren</title>
+
 <div class = "container-par">
+
+<!-- Anzeige links-->
 
     <div class = "container-6">
         <h1>Grillparty</h1>
         <p>Eine einfache Möglichkeit um Grillpartys zu verwalten.</p>
     </div>
-
+<!--Formular zum Registrieren -->
     <div class = "container-5">
         <h1>Registrieren </h1>
 
@@ -35,6 +39,9 @@
          {{ form.submit() }}
          
          <br><br>
+
+         <!--Fehlermeldungen -->
+
          {% for field, errors in form.errors.items() %}
          <small class="form-text text-muted ">
              {{ ', '.join(errors) }}

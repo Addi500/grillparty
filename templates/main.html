@@ -1,11 +1,12 @@
+<!--Grundseite mit Navbar und Footer -->
 <!DOCTYPE html>
 <html>
 
 <head>
+
     <meta http-equiv="content-type" lang="DE" content="text/html; charset=utf-8" />
-    <!-- Mobile Specific Metas
-   -->
-  <meta name="viewport" content="width=device-width, initial-scale=1 shrink-to-fit=no">
+<!-- Mobile Specific Metas-->
+    <meta name="viewport" content="width=device-width, initial-scale=1 shrink-to-fit=no">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
@@ -17,8 +18,11 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}" />
 </head>
 
+<!--Navbar-Block für Dashboard -->
 {% block navbar %}
+
 <body>
+<!--Navbar -->
     <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">Grillparty</a>
@@ -54,11 +58,13 @@
     {% endblock %}
 
     <br>
-    <!-- Footer -->
+<!-- Footer -->
+
     <footer class="text-center text-lg-start bg-light text-muted">
-        <!-- Section: Social media -->
         <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
-            <!-- Left -->
+
+<!-- Left -->
+
             <div class="me-5 d-none d-lg-block">
                 <span>Planen Sie mit uns Ihre nächste Grillparty!</span>
             </div>
@@ -67,14 +73,11 @@
         </section>
 
 
-        <!-- Section: Links  -->
+<!-- Section: Links  -->
         <section class="">
             <div class="container text-center text-md-start mt-5">
-                <!-- Grid row -->
                 <div class="row mt-3">
-                    <!-- Grid column -->
                     <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
-                        <!-- Content -->
                         <h6 class="text-uppercase fw-bold mb-4">
                             <i class="fas fa-gem me-3"></i>Grillparty
                         </h6>
@@ -83,10 +86,8 @@
                             über dort genannte Kontaktmöglichkeit auf uns zukommen.
                         </p>
                     </div>
-                    <!-- Grid column -->
-                    <!-- Grid column -->
                     <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
-                        <!-- Links -->
+<!-- Verlinkungen, Mitte -->
                         <h6 class="text-uppercase fw-bold mb-4">
                             Links
                         </h6>
@@ -99,10 +100,8 @@
 
 
                     </div>
-                    <!-- Grid column -->
-                    <!-- Grid column -->
                     <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-                        <!-- Links -->
+<!-- Rechts -->
                         <h6 class="text-uppercase fw-bold mb-4">
                             Contact
                         </h6>
@@ -117,18 +116,13 @@
                         </p>
 
                     </div>
-                    <!-- Grid column -->
                 </div>
-                <!-- Grid row -->
             </div>
         </section>
-        <!-- Section: Links  -->
-        <!-- Copyright -->
+<!-- Copyright -->
         <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
             © 2021 Copyright: Adrian Maiworm & Natalie Engelmann
-
         </div>
-        <!-- Copyright -->
     </footer>
 
 </body>

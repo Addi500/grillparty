@@ -1,15 +1,21 @@
-{% extends "dashboard.html" %}
+<!--Block der Veranstaltungsübersicht -->
 
+{% extends "dashboard.html" %}
 {% block overview %}
 
 <title> Grillparty - Einladungen</title>
 
 <div class="container-1">
     <h1> Veranstaltungseinladungen</h1>
+
+<!--Keine Einladung vorhanden -->
+
     {% if invites == 0%}
     <p>Es sind aktuell keine Veranstaltungseinladungen vorhanden.</p>
     <p>Legen Sie doch unter <a href="/newevent">Veranstaltung erstellen</a> selber eine Party an und laden Sie Ihre Freunde ein!</p>
     {%else%}
+
+<!--Anzeige von vorhandenen Einladungen -->
 
     {% for invite in invites %}
     <p>

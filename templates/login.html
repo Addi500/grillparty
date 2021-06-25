@@ -1,13 +1,20 @@
-{% extends "main.html" %}
+<!--Content-Block-->
 
+{% extends "main.html" %}
 {% block content%}
 <title> Grillparty - Anmelden</title>
+
+<!-- Anzeige links -->
+
 <div class = "container-par">
     <div class = "container-6">
         <h1>Grillparty</h1>
         <p>Eine einfache Möglichkeit um Grillpartys zu verwalten.</p>
     </div>
-    <div class="container-5">
+
+<!--Flashes -->
+
+        <div class="container-5">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="alert-info">
@@ -17,6 +24,9 @@
         </div>
         {% endif %}
         {% endwith %}
+
+<!--Anmeldeformular-->
+
         <h1>Anmelden </h1>
         <form method="POST">
             {{ form.hidden_tag() }}

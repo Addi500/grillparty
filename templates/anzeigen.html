@@ -1,5 +1,9 @@
+<!--Beibehalten der Navigation, Blocken der Übersicht -->
+
 {% extends "dashboard.html" %}
 {% block overview%}
+
+<!--Anzeigen der Flash-Nachrichten -->
 
 <div class="container-1">
     {% with messages = get_flashed_messages() %}
@@ -12,37 +16,43 @@
 
     {% endif %}
     {% endwith %}
-    <div class = "Partyinfo">
-    <h2>{{ party[1] }}</h2><br>
-    <h2>am {{ party[2] }} um {{ party[3] }}</h2>
-    <h3> Ort: {{ party[4]}} </h3>
-    <p>Sie wurden eingeladen von: {{party[5]}}</p>
-    
-    </div>
-<p>Bitte wählen Sie aus folgender Liste die Elemente aus, die Sie mitbringen möchten:</p>
 
-<form method="post">
-{% if items != 0 %}
-{% for item in items %}
-<div class="form-check form-check-inline">
+    <!--Anzeigen von Titel, Ort, Datum etc. -->
 
-    <input class="form-check-input" name="checkbox" type="checkbox" value="{{ item[1] }}" id="defaultCheck1">
-    <label class="form-check-label" for="defaultCheck1">
-        {{ item[1] }}
-    </label>
+        <div class = "Partyinfo">
+            <h2>{{ party[1] }}</h2><br>
+            <h2>am {{ party[2] }} um {{ party[3] }}</h2>
+            <h3> Ort: {{ party[4]}} </h3>
+            <p>Sie wurden eingeladen von: {{party[5]}}</p>
+        
+        </div>
 
-    <input type="hidden" name="info" value="{{ item[1] }}" />
-</div>
+<!--Bearbeiten der Itemliste-->
 
-{% endfor %}
+    <p>Bitte wählen Sie aus folgender Liste die Elemente aus, die Sie mitbringen möchten:</p>
+
+        <form method="post">
+        {% if items != 0 %}
+        {% for item in items %}
+            <div class="form-check form-check-inline">
+
+                <input class="form-check-input" name="checkbox" type="checkbox" value="{{ item[1] }}" id="defaultCheck1">
+                <label class="form-check-label" for="defaultCheck1">
+                {{ item[1] }}
+                </label>
+
+                <input type="hidden" name="info" value="{{ item[1] }}" />
+            </div>
+
+            {% endfor %}
 
 <br>
 
-<input type="submit" name="cmdsubmit" class="btn btn-light">
-   {% else %}
-    <p><i>Es sind keine Items mehr da, die noch mitgebracht werden müssen.</i></p>
-    {% endif %}
+            <input type="submit" name="cmdsubmit" class="btn btn-light">
+        {% else %}
+            <p><i>Es sind keine Items mehr da, die noch mitgebracht werden müssen.</i></p>
+        {% endif %}
 
-</form>
+        </form>
 </div>
 {% endblock %}

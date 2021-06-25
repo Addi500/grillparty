@@ -37,7 +37,7 @@ class Login(FlaskForm): #Klasse für Anmeldung
 
 class NewEvent(FlaskForm): #Klasse zum Anlegen einer neuen Veranstaltung
     title = StringField(label="Titel", validators=[InputRequired()])
-    date = DateField(label="Datum", validators=[DateRange(min=date.today())], default = date.today())
+    date = DateField(label="Datum", validators=[DateRange(min=date.today(), message='Datum darf nicht in der Vergangenheit liegen')], default = date.today(), )
     time = TimeField(label="Uhrzeit", validators=[InputRequired()])
     address = TextAreaField(label="Ort", validators=[InputRequired()])
     submit = SubmitField("Erstellen")
@@ -126,7 +126,7 @@ def newevent():
         for participant in session["Teilnehmer"]:
             print(participant)
             insert_into_participants(conn, cur, id, participant)
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("dashboard")) #um Aktualisierung zu sehen
     return render_template("newevent.html", form=form, friends = friends)
 
 @app.route("/dashboard", methods=['POST', 'GET'])
@@ -143,11 +143,11 @@ def dashboard():
         print("Keine Items vorhanden")
     if request.method == "POST":        
         Submit = request.form.get("submit")                
-        return redirect(url_for('bearbeiten', pid=Submit))   
+        return redirect(url_for('bearbeiten', pid=Submit))   #Übersicht Itemliste und Rückmeldungen
 
     return render_template("dashboard.html", foreign_parties=foreign_parties, own_parties=own_parties)   
 
-@app.route("/bearbeiten/<pid>", methods=['POST', 'GET'])
+@app.route("/bearbeiten/<pid>", methods=['POST', 'GET']) #pid ist Party-ID
 def bearbeiten(pid):    
     party = view_party(conn, cur, pid) #Tupel mit den Party Attributen    
     items = select_itemlist(conn, cur, pid, "all") #Liste aller Items als Tupel bestehend aus item und brought_by      
@@ -195,17 +195,17 @@ def addfriend():
 
     if form.validate_on_submit():
         session._get_current_object.__name__        
-        session["user_search"] = form.user.data
+        session["user_search"] = form.user.data #Übergabe des gesuchten an Datenbank
         
         suchergebnisse = search_user(conn, cur, session["user_search"], user)
         print (suchergebnisse)
-        return render_template ('addfriend.html', form=form, suchergebnisse=suchergebnisse)
+        return render_template ('addfriend.html', form=form, suchergebnisse=suchergebnisse) #Refresh
     
     if "Hinzufügen" in request.form:
         friend_request(conn, cur, user, request.form["Hinzufügen"], "request")
         flash('Freund hinzugefügt')
         print("flashing")
-        return redirect(url_for('addfriend'))
+        return redirect(url_for('addfriend')) #Refresh
         
     return render_template('addfriend.html', form=form)
 
@@ -221,7 +221,7 @@ def invitations():
         if "Accept" in request.form:
             change_participants(conn, cur, request.form["Accept"], user, "accept")
             pid = request.form["Accept"]
-            return redirect(url_for('accept', pid=pid))
+            return redirect(url_for('accept', pid=pid)) #pid ist Party-ID
         elif "Decline" in request.form:
             change_participants(conn, cur, request.form["Decline"], user, "delete")
             pid = request.form["Decline"]
@@ -231,7 +231,7 @@ def invitations():
 
     return render_template('invitations.html', invites = invites)
 
-@app.route("/accept/<pid>", methods=['POST', 'GET'])
+@app.route("/accept/<pid>", methods=['POST', 'GET']) # pid ist Party-ID
 def accept(pid):
     session._get_current_object.__name__
     user = session["user"]
@@ -256,7 +256,7 @@ def Logout():
     session._get_current_object.__name__    
     forward_message = "Moving Forward..."
     if request.method == 'POST':
-        session['logged_in']=False
+        session['logged_in']=False #Löschen der Session-Variablen -> kein Umgehen der erneuten Anmeldung
         session["address"] = None
         session ['user'] = None
         print("Logged out")

@@ -1,6 +1,12 @@
 {% extends "dashboard.html" %}
 {% block overview%}
+
+<!--Beibehalten Navbars, Blocken der Übersicht -->
+
 <title>Grillparty bearbeiten</title>
+
+<!--Anzeigen von Veranstaltungsinformationen-->
+
 <div class="container-1">
     <h1>{{ party[1] }}</h1>
     <h2>am {{ party[2] }} um {{ party[3] }}</h2>
@@ -8,6 +14,9 @@
     <h4>Ort: {{party[4]}}</h4>
     <br />
     <br />
+
+<!--Anzeigen der Itemlist, von wem mitgebracht wird, was noch verteilt werden muss -->
+
     <form method="POST">
         <div id="edit">
 
@@ -26,10 +35,10 @@
 
             </div>
             {% endfor %}
-            {%else%}
+            {%else%}<!--Wenn noch keine Teilnehmer -->
             <i>Es sind noch keine Antworten vorhanden</i>
             {%endif%}
-            {% if unbound_items != 0 %}
+            {% if unbound_items != 0 %} <!--noch nicht zugeteilte Items -->
 
             <h5><u>Items, die noch nicht zugeteilt sind:</u></h5>
 
@@ -45,25 +54,5 @@
         <br />
         <a href='/dashboard' class="btn btn-light">Zum Dashboard</a>
     </form>
-
-    <!--{ form.submit() }}-->
-    <!--<h4>Items</h4>
-
-    {% for item in items %}
-
-    <div>
-        <p>
-            { item[1] }}
-            {%if item[2] !=0%}
-            (mitgebracht von {item[3]}})
-        </p>
-        {%endif%}
-        <input type="hidden" name="info" value="{ item[0] }}" />
-        <form method="post">
-            <button name="delete_item" type="submit" value="{ party[0] }},{item[1]}}">Entfernen</button>
-        </form>
-    </div>-->
-    <!--{ form.submit() }}-->
-    <!--{% endfor %}-->
 </div>
 {% endblock %}
