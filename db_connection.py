@@ -8,12 +8,24 @@ std_path = "database.db"
 ###Grundfunktionen:
 
 def establish_connection(sql_filepath=std_path):
+	"""
+	stellt Verbindung zur DB her  und gibt sqlite3-Connection und -Cursor Objekt zurück
+
+	Args:
+	sql_filepath: (relativer) Pfad
+	"""
+
 	connection = sql.connect(sql_filepath, check_same_thread=False)
 	cursor = connection.cursor()
 	print("established Connection to Database ", sql_filepath)
 	return connection, cursor
 
 def write_to_db(connection, cursor, sql_script, parameters=[]):
+	"""
+	übernimmt sqlite3-connection und -cursor sowie das zu schreibende sql_script und die dazugehörigen Parameter
+	
+	schreibt mit Rückgabe des letzten geschriebenen PK in die DB
+	"""
 	try:
 		cursor.execute(sql_script, parameters)
 		connection.commit()
@@ -23,6 +35,10 @@ def write_to_db(connection, cursor, sql_script, parameters=[]):
 		raise	
 
 def initial_db(name=std_path):
+	"""
+	erstellt (nach Vorhanden-Prüfung) neue DB
+	keine Rückgabe
+	"""
 	if os.path.exists(name):		
 		print("Vorhandene DB-Datei gefunden")
 	else:
@@ -208,6 +224,7 @@ def initial_db(name=std_path):
 		print("created new Database ", name)
 
 ###Insert-Funktionen
+#alle übernehmen connection und cursor + Attributwerte
 
 def insert_into_users(conn, cur, mailaddress, name, password):
 	encrypted_pw = hashlib.sha256(password.encode('utf-8')).hexdigest()
@@ -237,9 +254,6 @@ def insert_into_participants(conn, cur, party_id, participant_mail):
 	write_to_db(conn, cur, script, parameters)
 
 def insert_into_itemlist(conn, cur, party_id, item):
-
-	#wie werden die Items übergeben? hier schon for-schleife oder beim aufruf jeweils?
-
 	script = """
 	INSERT INTO itemlist (party_id, item, brought_by) VALUES (?,?,?);
 	"""
@@ -254,67 +268,6 @@ def insert_into_friends(conn, cur, friend1, friend2):
 	write_to_db(conn, cur, script, parameters)
 
 ###Check- und Select-Funktionen
-
-def check_for_friend_requests(conn, cur, user, operation):
-	"""
-	checks, if there are new friend requests
-	returned tupel:
-	0: friend mail (id)
-	1: friend name
-
-	operation Arg: "my_requests" or "foreign_requests"
-	"""
-	if operation == "my_requests":
-		script = """
-		SELECT users.name, friend2_mail
-		FROM friends
-		INNER JOIN users on users.mailaddress = friends.friend2_mail
-		WHERE friend2_mail NOT IN
-			(SELECT friend1_mail
-			FROM friends
-			WHERE friend2_mail = ?)
-		AND friend1_mail = ?;
-		"""
-		parameters = [user, user]
-		cur.execute(script, parameters)
-		results = cur.fetchall()
-		return results
-
-	elif operation == "foreign_requests":
-		script = """
-		SELECT users.name, friend1_mail
-		FROM friends
-		INNER JOIN users on users.mailaddress = friends.friend1_mail
-		WHERE friend1_mail IN
-			(SELECT friend1_mail
-			FROM friends
-			WHERE friend2_mail = ?)
-		AND NOT friend1_mail IN
-			(SELECT friend2_mail
-			FROM friends
-			WHERE friend1_mail = ?)
-			GROUP BY friend1_mail;
-		"""
-		parameters = [user, user]
-		cur.execute(script, parameters)
-		results = cur.fetchall()
-		return results
-	else:
-		print("wrong operation")
-
-def view_party(conn, cur, party):
-	script = """
-	SELECT *
-	FROM parties
-	WHERE id = ?;
-	"""
-	parameters = [party]
-	cur.execute(script, parameters)
-	results = cur.fetchone()
-	results = list(results)
-	results[2] = readable_date_time(results[2], "date")
-	results[3] = readable_date_time(results[3], "time")
-	return results
 
 def select_parties(conn, cur, user, type):
 	"""
@@ -357,7 +310,7 @@ def select_parties(conn, cur, user, type):
 
 def select_friends(conn, cur, user):
 	"""
-	Tupel:
+	returned tuple:
 	0: friend mail (id)
 	1: friend name
 	"""
@@ -377,74 +330,6 @@ def select_friends(conn, cur, user):
 	if len(friends) == 0:
 		friends = 0
 	return friends
-
-def search_user(conn, cur, begriff, searching_user):
-	results =[]
-	begriff = "%"+begriff+"%"
-	print (begriff)
-
-	script = """
-	SELECT mailaddress, name
-	FROM users
-	WHERE (name LIKE (?))
-	AND mailaddress NOT IN (SELECT friend2_mail FROM friends WHERE friend1_mail = ?)
-	AND mailaddress NOT IN (?);
-	"""
-
-	parameters = [begriff, searching_user, searching_user]
-	cur.execute(script, parameters)
-	results = cur.fetchall()
-
-	if len(results) == 0:
-		results = 0
-
-	return results
-
-def check_login(conn, cur, mailaddress, password):
-	cur.execute("SELECT password FROM users WHERE mailaddress = ?;", [mailaddress])
-	encrypted_pw = hashlib.sha256(password.encode('utf-8')).hexdigest()
-	try:
-		pw = cur.fetchone()[0]
-		if pw == encrypted_pw:
-			return True
-		else:
-			return False
-	except:
-		print("except-Anweisung im Login")
-		return False
-
-def check_duplicate(conn, cur, table, column, value):
-	#https://stackoverflow.com/questions/61896450/check-duplication-when-edit-an-exist-database-field-with-wtforms-custom-validato
-
-	cur.execute("SELECT * FROM ? WHERE ? = ?;", (table, column, value))
-	for row in cur:
-		if len(cur.fetchone()) == 0:
-			return False
-		else:
-			return True	
-
-def select_open_party_invites(conn, cur, user):
-	#returns list of titles, date and address of open invites to parties
-	
-	script = """
-	SELECT id, title, date, time, address, owner, users.name
-	FROM parties
-	INNER JOIN users on users.mailaddress = parties.owner
-	WHERE parties.id
-	IN (SELECT party_id FROM participants WHERE participant_mail = ? AND accepted = 0);
-	"""
-
-	parameters = [user]
-	cur.execute(script, parameters)
-	results = cur.fetchall()
-	for party in results:
-		party = list(party)
-		party[2] = readable_date_time(party[2], "date")
-		party[3] = readable_date_time(party[3], "time")
-	if len(results) == 0:
-		results = 0
-		
-	return results
 
 def select_itemlist(conn, cur, party, type):
 	"""
@@ -556,6 +441,135 @@ def select_guests_items(conn, cur, pid, type="all", user=None):
 				results = 0	
 	
 	return results
+
+def select_open_party_invites(conn, cur, user):
+	"""
+	returns list of titles, date and address of open invites to parties
+	"""
+	
+	script = """
+	SELECT id, title, date, time, address, owner, users.name
+	FROM parties
+	INNER JOIN users on users.mailaddress = parties.owner
+	WHERE parties.id
+	IN (SELECT party_id FROM participants WHERE participant_mail = ? AND accepted = 0);
+	"""
+
+	parameters = [user]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+	for party in results:
+		party = list(party)
+		party[2] = readable_date_time(party[2], "date")
+		party[3] = readable_date_time(party[3], "time")
+	if len(results) == 0:
+		results = 0
+		
+	return results
+
+def view_party(conn, cur, party):
+	script = """
+	SELECT *
+	FROM parties
+	WHERE id = ?;
+	"""
+	parameters = [party]
+	cur.execute(script, parameters)
+	results = cur.fetchone()
+	results = list(results)
+	results[2] = readable_date_time(results[2], "date")
+	results[3] = readable_date_time(results[3], "time")
+	return results
+
+def search_user(conn, cur, begriff, searching_user):
+	results =[]
+	begriff = "%"+begriff+"%"
+	print (begriff)
+
+	script = """
+	SELECT mailaddress, name
+	FROM users
+	WHERE (name LIKE (?))
+	AND mailaddress NOT IN (SELECT friend2_mail FROM friends WHERE friend1_mail = ?)
+	AND mailaddress NOT IN (?);
+	"""
+
+	parameters = [begriff, searching_user, searching_user]
+	cur.execute(script, parameters)
+	results = cur.fetchall()
+
+	if len(results) == 0:
+		results = 0
+
+	return results
+
+def check_for_friend_requests(conn, cur, user, operation):
+	"""
+	checks, if there are new friend requests
+	returned tupel:
+	0: friend mail (id)
+	1: friend name
+
+	operation Arg: "my_requests" or "foreign_requests"
+	"""
+	if operation == "my_requests":
+		script = """
+		SELECT users.name, friend2_mail
+		FROM friends
+		INNER JOIN users on users.mailaddress = friends.friend2_mail
+		WHERE friend2_mail NOT IN
+			(SELECT friend1_mail
+			FROM friends
+			WHERE friend2_mail = ?)
+		AND friend1_mail = ?;
+		"""
+		parameters = [user, user]
+		cur.execute(script, parameters)
+		results = cur.fetchall()
+		return results
+
+	elif operation == "foreign_requests":
+		script = """
+		SELECT users.name, friend1_mail
+		FROM friends
+		INNER JOIN users on users.mailaddress = friends.friend1_mail
+		WHERE friend1_mail IN
+			(SELECT friend1_mail
+			FROM friends
+			WHERE friend2_mail = ?)
+		AND NOT friend1_mail IN
+			(SELECT friend2_mail
+			FROM friends
+			WHERE friend1_mail = ?)
+			GROUP BY friend1_mail;
+		"""
+		parameters = [user, user]
+		cur.execute(script, parameters)
+		results = cur.fetchall()
+		return results
+	else:
+		print("wrong operation")
+
+def check_login(conn, cur, mailaddress, password):
+	cur.execute("SELECT password FROM users WHERE mailaddress = ?;", [mailaddress])
+	encrypted_pw = hashlib.sha256(password.encode('utf-8')).hexdigest()
+	try:
+		pw = cur.fetchone()[0]
+		if pw == encrypted_pw:
+			return True
+		else:
+			return False
+	except:
+		print("except-Anweisung im Login")
+		return False
+
+def check_duplicate(conn, cur, table, column, value):
+	cur.execute("SELECT * FROM ? WHERE ? = ?;", (table, column, value))
+	for row in cur:
+		if len(cur.fetchone()) == 0:
+			return False
+		else:
+			return True	
 
 ###UPDATE-Funktionen
 
